@@ -1,279 +1,281 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Impulse Evolution 🚀</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-  body {
-    background: #0a1a33;
-    color: #e2e8f0;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding-top: 20px;
-  }
-  h1 {
-    font-size: 28px;
-    margin-bottom: 6px;
-  }
-  .stats {
-    font-size: 18px;
-    margin: 12px 0;
-  }
-  button {
-    margin: 8px 6px;
-    padding: 14px 30px;
-    font-size: 19px;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: transform 0.12s, box-shadow 0.12s;
-  }
-  button:active {
-    transform: scale(0.97);
-  }
-  .btn-main {
-    background: #16a34a;
-    color: #fff;
-    box-shadow: 0px 6px 0px #0f6d32;
-  }
-  .btn-blue {
-    background: #2563eb;
-    color: #fff;
-    box-shadow: 0px 6px 0px #1b3db4;
-  }
-  .btn-disabled {
-    background: #4b5563;
-    color: #a1a1aa;
-    cursor: not-allowed;
-  }
-  #menuArea {
-    margin-top: 22px;
-    font-size: 18px;
-  }
-  #notif {
-    font-size: 20px;
-    margin-top: 10px;
-    color: #fde047;
-  }
-  .section {
-    margin-top: 18px;
-    padding: 12px;
-    background: #12243f;
-    border-radius: 12px;
-  }
-  .mission-ok {
-    color: #22c55e;
-  }
-  .mission-no {
-    color: #ef4444;
-  }
-  #rankList li {
-    text-align: left;
-    font-size: 18px;
-    margin: 2px 0;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Impulse Evolution 🚀</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background: #082145;
+      color: #f0f6ff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 18px;
+    }
+    h1 {
+      font-size: 30px;
+      margin-bottom: 4px;
+    }
+    .stats {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    button {
+      margin: 8px 6px;
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.13s, box-shadow 0.13s;
+    }
+    button:active { transform: scale(0.95); }
+    .btn-main {
+      background: #20a74a;
+      color: #fff;
+      box-shadow: 0px 6px 0px #128234;
+    }
+    .btn-blue {
+      background: #3377ff;
+      color: #fff;
+      box-shadow: 0px 6px 0px #1f4bb4;
+    }
+    .btn-disabled {
+      background: #4c5266;
+      color: #a1a1ab;
+      cursor: not-allowed;
+    }
+    #menuArea { margin-top: 22px; font-size: 18px; }
+    #notif {
+      font-size: 20px;
+      margin-top: 12px;
+      padding: 8px;
+      border-radius: 8px;
+      animation: fadeInOut 2.6s ease-in-out;
+    }
+    @keyframes fadeInOut {
+      0% {opacity: 0;}
+      15% {opacity: 1;}
+      70% {opacity: 1;}
+      100% {opacity: 0;}
+    }
+    .section {
+      margin-top: 18px;
+      padding: 14px;
+      background: #12325e;
+      border-radius: 12px;
+    }
+    .mission-ok { color: #22e55e; }
+    .mission-no { color: #f87171; }
+    #rankList li {
+      text-align: left;
+      font-size: 19px;
+      margin: 3px 0;
+    }
+    .progress-container {
+      width: 85%;
+      height: 18px;
+      background: #0f2040;
+      border-radius: 12px;
+      margin: 8px auto;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .progress-inner {
+      height: 100%;
+      background: linear-gradient(90deg, #20a74a, #3377ff);
+      width: 0%;
+      transition: width 0.7s ease;
+    }
+  </style>
 </head>
 <body>
 
 <h1>Impulse Evolution 🚀</h1>
 
 <div class="stats">
-  Moedas 🪙: <span id="coinsDisplay">0</span><br>
-  Energia ⚡: <span id="energyDisplay">0</span>/100 |
-  Nível ⭐: <span id="levelDisplay">1</span> |
-  XP 🔥: <span id="xpDisplay">0</span>
+  🪙 <span id="coinsDisplay">0</span> |
+  ⚡ <span id="energyDisplay">0</span>/100 |
+  ⭐ <span id="levelDisplay">1</span> |
+  🔥 <span id="xpDisplay">0</span>
 </div>
 
-<button class="btn-main" onclick="handleClick()">TOCAR!</button>
-<button class="btn-blue" onclick="openMenu('upgrades')">Upgrades</button>
-<button class="btn-blue" onclick="openMenu('missions')">Missões</button>
-<button class="btn-blue" onclick="openMenu('ranking')">Ranking Global</button>
+<div class="progress-container">
+  <div id="xpBar" class="progress-inner"></div>
+</div>
+
+<button class="btn-main" onclick="btnClick()">TOCAR!</button>
+<button class="btn-blue" onclick="menu('upgrades')">Upgrades</button>
+<button class="btn-blue" onclick="menu('missions')">Missões</button>
+<button class="btn-blue" onclick="menu('ranking')">Ranking Global</button>
 
 <div id="notif"></div>
 <div id="menuArea"></div>
 
+<audio id="soundClick"></audio>
+<audio id="soundLevel"></audio>
+<audio id="soundMission"></audio>
+<audio id="soundRank"></audio>
+
 <script>
+// ==================
+// 🔊 Sons Base64 (sútil)
+// ==================
+document.getElementById("soundClick").src =
+"data:audio/mp3;base64,//uQxAAAAAAD...";
+document.getElementById("soundLevel").src =
+"data:audio/mp3;base64,//uQxAAA...";
+document.getElementById("soundMission").src =
+"data:audio/mp3;base64,//uQxAAA...";
+document.getElementById("soundRank").src =
+"data:audio/mp3;base64,//uQxAAA...";
 
-// ===========================
-// ⚙️ CONFIGURAÇÃO RANKING
-// ===========================
-const sheetID = "12qXDvr7ZooG9qk-6qN8ZO9eDGGFfITkiPKz36lMLgGA";
-const gURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
-
-// ===========================
-// 🧾 DADOS DO JOGADOR
-// ===========================
+// ==================
+// 🧾 Jogador
+// ==================
 const player = {
-  coins: 0,
-  energy: 100,
-  level: 1,
-  xp: 0,
-  upgrades: { power: 1, speed: 0 },
-  missions: { clicks: 0, donePlay100: false, doneLevel5: false }
+  coins: 0, energy: 100,
+  level: 1, xp: 0,
+  upgrades: {power:1, speed:0},
+  missions: {clicks:0, donePlay100:false, doneLevel5:false}
 };
 
-// ===========================
-// 💾 LOCAL STORAGE
-// ===========================
-function saveAll(){ localStorage.setItem("impulse_evo_visual", JSON.stringify(player)); }
+// ==================
+// 💾 LocalStorage
+// ==================
+function saveAll(){ localStorage.setItem("impulse_full_b", JSON.stringify(player)); }
 function loadAll(){
-  const raw = localStorage.getItem("impulse_evo_visual");
-  if(raw){ Object.assign(player, JSON.parse(raw)); }
+  const d = localStorage.getItem("impulse_full_b");
+  if(d) Object.assign(player, JSON.parse(d));
 }
 
-// ===========================
-// 🕹️ GAMEPLAY
-// ===========================
-function handleClick(){
+// ==================
+// 🎮 Click
+// ==================
+function btnClick(){
+  document.getElementById("soundClick").play();
   if(player.energy <= 0){ notify("⚡ Sem energia!"); return; }
   player.coins += player.upgrades.power;
   player.energy--;
   player.xp++;
   player.missions.clicks++;
-  checkLevelUp();
-  checkMissions();
-  saveAll();
-  updateDisplay();
+  updateBar();
+  checkLvl(); checkMissions();
+  saveAll(); updateDisplay();
 }
 
-// ===========================
-// ⭐ NIVELAMENTO
-// ===========================
-function checkLevelUp(){
+// ==================
+// 🔼 Level Up
+// ==================
+function checkLvl(){
   if(player.xp >= player.level * 60){
     player.level++;
     player.energy = Math.min(player.energy + 20, 100);
     player.xp = 0;
-    notify(`🎉 Subiu para Nível ${player.level}!`);
+    document.getElementById("soundLevel").play();
+    notify("⭐ Subiu de Nível!");
+    updateBar();
   }
 }
 
-// ===========================
-// 🔔 NOTIFICAÇÕES
-// ===========================
-function notify(msg){
-  const n = document.getElementById("notif");
-  n.innerText = msg;
-  setTimeout(()=> n.innerText = "", 2500);
+// ==================
+// 🎉 Missões
+// ==================
+function checkMissions(){
+  if(player.missions.clicks>=100 && !player.missions.donePlay100){
+    player.missions.donePlay100 = true;
+    player.coins += 50;
+    document.getElementById("soundMission").play();
+    notify("🎯 Missão 100 cliques!");
+  }
+  if(player.level>=5 && !player.missions.doneLevel5){
+    player.missions.doneLevel5 = true;
+    player.coins += 100;
+    document.getElementById("soundMission").play();
+    notify("🌟 Missão Nível 5!");
+  }
 }
 
-// ===========================
-// 📊 DISPLAY
-// ===========================
+// ==================
+// 📊 UI Updates
+// ==================
 function updateDisplay(){
   document.getElementById("coinsDisplay").innerText = player.coins;
   document.getElementById("energyDisplay").innerText = player.energy;
   document.getElementById("levelDisplay").innerText = player.level;
   document.getElementById("xpDisplay").innerText = player.xp;
+  updateBar();
+}
+function updateBar(){
+  const pct = Math.min((player.xp / (player.level * 60)) * 100, 100);
+  document.getElementById("xpBar").style.width = pct + "%";
 }
 
-// ===========================
-// 📱 MENUS
-// ===========================
-function openMenu(type){
+// ==================
+// 📣 Notificação
+// ==================
+function notify(txt){
+  const n = document.getElementById("notif");
+  n.innerText = txt;
+}
+
+// ==================
+// 🟢 Menus
+// ==================
+function menu(type){
   let html = "";
-  
-  if(type == "upgrades"){
+  if(type=="upgrades"){
     html += `<div class="section"><h3>Upgrades</h3>`;
     html += btnList("Power +1 (50)", player.coins>=50, ()=>buy("power",50));
     html += btnList("Speed +20 energia (30)", player.coins>=30, ()=>buy("speed",30));
     html += `</div>`;
   }
-  
-  if(type == "missions"){
+  if(type=="missions"){
     html += `<div class="section"><h3>Missões</h3>`;
-    html += `<p class="${player.missions.donePlay100? 'mission-ok':'mission-no'}">• Clique 100×</p>`;
-    html += `<p class="${player.missions.doneLevel5? 'mission-ok':'mission-no'}">• Chegar nível 5</p>`;
+    html += `<p class="${player.missions.donePlay100?'mission-ok':'mission-no'}">• Clique 100×</p>`;
+    html += `<p class="${player.missions.doneLevel5?'mission-ok':'mission-no'}">• Chegar nível 5</p>`;
     html += `</div>`;
   }
-  
-  if(type == "ranking"){
-    html += `<div class="section"><h3>Ranking Global por Nível</h3><div id="rankList">Carregando...</div></div>`;
+  if(type=="ranking"){
+    html += `<div class="section"><h3>Ranking Global</h3><div id="rankList">Carregando...</div></div>`;
     fetchRank();
   }
-  
   document.getElementById("menuArea").innerHTML = html;
 }
-
-// ===========================
-// 💰 UPGRADES
-// ===========================
-function btnList(text, ok, action){
-  return `<button class="${ok ? 'btn-main' : 'btn-disabled'}" ${ok ? `onclick="${action.name}()"` : ""}>${text}</button><br>`;
+function btnList(txt, ok, act){
+  return `<button class="${ok?'btn-main':'btn-disabled'}" ${ok? `onclick="${act.name}()"`:""}>${txt}</button><br>`;
 }
+function buy(type,c){if(player.coins<c){notify("🪙 Sem moedas");return;}player.coins-=c;player.upgrades[type]++;saveAll();updateDisplay();menu("upgrades");notify("✔️ Comprado");}
 
-function buy(type, cost){
-  if(player.coins < cost){ notify("🪙 Sem moedas suficientes!"); return; }
-  player.coins -= cost;
-  player.upgrades[type]++;
-  saveAll();
-  updateDisplay();
-  openMenu("upgrades");
-  notify("✅ Upgraded!");
-}
-
-// ===========================
-// 🏁 MISSÕES
-// ===========================
-function checkMissions(){
-  if(player.missions.clicks >= 100 && !player.missions.donePlay100){
-    player.missions.donePlay100 = true;
-    player.coins += 50;
-    notify("🎯 Missão concluída! +50 moedas");
-  }
-  if(player.level >= 5 && !player.missions.doneLevel5){
-    player.missions.doneLevel5 = true;
-    player.coins += 100;
-    notify("🌟 Missão Nível 5 concluída! +100 moedas");
-  }
-}
-
-// ===========================
-// 🌍 RANKING GLOBAL
-// ===========================
+// ==================
+// 🌍 Ranking
+// ==================
 async function fetchRank(){
-  const query = encodeURIComponent("select A, C order by C desc limit 10");
-  const url = `${gURL}tq=${query}`;
-  try {
-    const res = await fetch(url);
-    const text = await res.text();
-    const json = text.substring(text.indexOf("{"), text.lastIndexOf("}")+1);
-    const data = JSON.parse(json).table.rows;
-    
-    let out = "<ol>";
-    data.forEach(r => {
-      const nm = r.c[0]? r.c[0].v : "—";
-      const lvl = r.c[1]? r.c[1].v : 0;
-      out += `<li>${nm} — ⭐ ${lvl}</li>`;
-    });
-    out += "</ol>";
-    
+  document.getElementById("soundRank").play();
+  const q = encodeURIComponent("select A, C order by C desc limit 10");
+  const url = `${gURL}tq=${q}`;
+  try{
+    const r = await fetch(url); const t = await r.text();
+    const js = t.substring(t.indexOf("{"), t.lastIndexOf("}")+1);
+    const arr = JSON.parse(js).table.rows;
+    let out="<ol>";
+    arr.forEach(r=> { const nm=r.c[0]?r.c[0].v:"—"; const lv=r.c[1]?r.c[1].v:0; out+=`<li>${nm} ⭐ ${lv}</li>`; });
+    out+="</ol>";
     document.getElementById("rankList").innerHTML = out;
-  } catch(e){
-    document.getElementById("rankList").innerHTML = "⚠️ Não foi possível carregar ranking.";
-  }
+  } catch{document.getElementById("rankList").innerHTML="⚠️ Falha ao carregar";}
 }
 
-// ===========================
-// ⏱️ ENERGIA REGEN
-// ===========================
-setInterval(()=>{
-  if(player.energy < 100){
-    player.energy++;
-    saveAll();
-    updateDisplay();
-  }
-}, 5000);
+// ==================
+// 🔁 Energia Regen
+// ==================
+setInterval(()=>{if(player.energy<100){player.energy++;saveAll();updateDisplay();}},5000);
 
-// ===========================
-// 🟢 INÍCIO
-// ===========================
-loadAll();
-Telegram.WebApp.expand();
-updateDisplay();
+// ==================
+// 🚀 Início
+// ==================
+loadAll(); Telegram.WebApp.expand(); updateDisplay();
 
 </script>
 </body>
 </html>
+
