@@ -2,44 +2,149 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Impulse</title>
+  <title>Impulse ADV</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      background: #0f172a;
-      color: white;
+      background: #071e3d;
+      color: #fff;
       text-align: center;
-      font-family: Arial;
-      margin-top: 50px;
+      font-family: Arial, sans-serif;
+      margin-top: 30px;
     }
-
     button {
-      padding: 20px 40px;
-      font-size: 24px;
-      background: #22c55e;
+      padding: 15px 30px;
+      font-size: 22px;
+      background: #10b981;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       color: white;
-      margin-top: 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: #2563eb;
+    }
+    .title {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    #stats {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+    .btn-small {
+      padding: 10px 20px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
 
-<h1>Impulse</h1>
-<p>Moedas: <span id="coins">0</span></p>
+<h1>Impulse ADV 🚀</h1>
+<p class="title">Moedas: <span id="coinsDisplay">0</span></p>
+<p id="stats">Energia: <span id="energyDisplay">0</span> | Nível: <span id="levelDisplay">1</span> | XP: <span id="xpDisplay">0</span></p>
 
-<button onclick="clickGame()">TOCAR</button>
+<button onclick="clickGame()">TOCAR!</button>
+<button class="btn-secondary btn-small" onclick="openMenu('upgrades')">Upgrades</button>
+<button class="btn-secondary btn-small" onclick="openMenu('missions')">Missões</button>
+
+<div id="menuArea"></div>
 
 <script>
-  let coins = 0;
+  // ───── Dados do Jogador ─────
+  const player = {
+    coins: 0,
+    energy: 100,
+    level: 1,
+    xp: 0,
+    upgrades: {
+      power: 1,
+      speed: 0,
+      double: 0,
+      autoc: 0
+    },
+    missions: {
+      daily: []
+    }
+  };
 
-  function clickGame() {
-    coins++;
-    document.getElementById("coins").innerText = coins;
+  function saveData() {
+    localStorage.setItem("impulseADV", JSON.stringify(player));
   }
 
+  function loadData() {
+    const saved = localStorage.getItem("impulseADV");
+    if (saved) {
+      Object.assign(player, JSON.parse(saved));
+    }
+  }
+
+  function updateDisplay() {
+    document.getElementById('coinsDisplay').innerText = player.coins;
+    document.getElementById('energyDisplay').innerText = player.energy + "/100";
+    document.getElementById('levelDisplay').innerText = player.level;
+    document.getElementById('xpDisplay').innerText = player.xp;
+  }
+
+  // ───── Click Game ─────
+  function clickGame() {
+    if (player.energy <= 0) return;
+    let gain = player.upgrades.power;
+    if (player.upgrades.double > 0) gain *= (1 + player.upgrades.double);
+    player.coins += gain;
+    player.energy--;
+    player.xp += 1;
+    if (player.xp >= player.level * 100) {
+      player.level++;
+      player.energy = Math.min(player.energy + 20, 100);
+      player.xp = 0;
+      alert("Subiu de nível! 🎉");
+    }
+    saveData();
+    updateDisplay();
+  }
+
+  // ───── Menus ─────
+  function openMenu(type) {
+    let html = "";
+    if (type === 'upgrades') {
+      html += "<h3>Upgrades</h3>";
+      html += `<button onclick="buy('power', 50)">Power +1 (50)</button><br>`;
+      html += `<button onclick="buy('speed', 30)">Speed +20 energia (30)</button><br>`;
+      html += `<button onclick="buy('double', 120)">Double +10% (120)</button><br>`;
+      html += `<button onclick="buy('autoc', 200)">Auto Click (200)</button>`;
+    }
+    if (type === 'missions') {
+      html += "<h3>Missões Diárias</h3>";
+      html += "<p>Complete missões para ganhar bônus!</p>";
+    }
+    document.getElementById('menuArea').innerHTML = html;
+  }
+
+  function buy(type, cost) {
+    if (player.coins >= cost) {
+      player.coins -= cost;
+      player.upgrades[type] += (type === 'speed' ? 1 : 1);
+      saveData();
+      updateDisplay();
+      openMenu('upgrades');
+      alert("Comprado com sucesso!");
+    } else {
+      alert("Sem moedas suficientes");
+    }
+  }
+
+  setInterval(() => {
+    if (player.energy < 100) {
+      player.energy++;
+      saveData(); updateDisplay();
+    }
+  }, 5000);
+
+  loadData();
   Telegram.WebApp.expand();
+  updateDisplay();
 </script>
 
 </body>
