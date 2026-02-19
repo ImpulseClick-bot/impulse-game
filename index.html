@@ -35,21 +35,21 @@ h1{margin-top:12px;font-size:26px;}
   transition:0.4s;
 }
 
-.screen{display:none;padding-bottom:80px;}
+.screen{display:none;padding-bottom:90px;}
 .screen.active{display:block;}
 
 .section{
   margin:12px auto;
   width:90%;
-  padding:14px;
+  padding:16px;
   background:rgba(255,255,255,0.08);
-  border-radius:14px;
+  border-radius:16px;
 }
 
 button{
   margin:6px;
   padding:14px 22px;
-  font-size:16px;
+  font-size:15px;
   border-radius:12px;
   border:none;
   color:white;
@@ -59,6 +59,7 @@ button{
 
 .btn-main{background:#22c55e;}
 .btn-blue{background:#3b82f6;}
+.btn-gold{background:#f59e0b;}
 
 .navbar{
   position:fixed;
@@ -79,23 +80,28 @@ button{
 
 .combo{font-size:13px;color:#22c55e;}
 
-.particle{
-  position:absolute;
-  width:6px;height:6px;
-  background:#22c55e;
-  border-radius:50%;
-  animation:rise 1s ease-out forwards;
+.league{
+  font-size:14px;
+  margin-top:4px;
 }
-@keyframes rise{
-  from{opacity:1;transform:translateY(0);}
-  to{opacity:0;transform:translateY(-60px);}
+
+.boost{
+  color:#f59e0b;
+  font-size:13px;
 }
+
+.goal{
+  font-size:13px;
+  margin-top:6px;
+  color:#38bdf8;
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>Impulse Game 🚀</h1>
+<h1 id="title">Impulse Game 🚀</h1>
 
 <div class="stats">
 🪙 <span id="coins">0</span> |
@@ -108,12 +114,25 @@ button{
 ⚡ Combo: x<span id="combo">1</span>
 </div>
 
+<div class="league">
+🏆 Liga: <span id="league">Bronze</span>
+</div>
+
+<div class="boost">
+<span id="boostText"></span>
+</div>
+
+<div class="goal">
+🎯 Meta: Alcance nível 20 para desbloquear Foguete Lendário
+</div>
+
 <div class="progress-container">
 <div id="xpBar" class="progress-inner"></div>
 </div>
 
 <div id="home" class="screen active">
 <button class="btn-main" onclick="clickGame()">TOCAR!</button>
+<button class="btn-gold" onclick="openChest()">Abrir Baú 🎁</button>
 </div>
 
 <div id="upgrades" class="screen">
@@ -158,15 +177,26 @@ const player={
   clicks:0,
   combo:1,
   lastClick:0,
-  lastDaily:"",
   upgrades:{power:1,speed:0},
+  boost:0,
+  boostEnd:0,
+  streak:0,
+  lastDaily:"",
   missions:{active:[],history:[]}
 };
 
-function save(){localStorage.setItem("impulse_stable",JSON.stringify(player));}
-function load(){const d=localStorage.getItem("impulse_stable");if(d)Object.assign(player,JSON.parse(d));}
+function save(){localStorage.setItem("impulse_pro",JSON.stringify(player));}
+function load(){const d=localStorage.getItem("impulse_pro");if(d)Object.assign(player,JSON.parse(d));}
 
-function xpNeeded(){return Math.floor(60*Math.pow(player.level,1.2));}
+function xpNeeded(){return Math.floor(60*Math.pow(player.level,1.25));}
+
+function getLeague(){
+  if(player.level>=25)return "Diamante";
+  if(player.level>=18)return "Platina";
+  if(player.level>=12)return "Ouro";
+  if(player.level>=6)return "Prata";
+  return "Bronze";
+}
 
 function updateUI(){
   coins.innerText=player.coins;
@@ -174,7 +204,19 @@ function updateUI(){
   level.innerText=player.level;
   xp.innerText=player.xp;
   combo.innerText=player.combo;
+  league.innerText=getLeague();
   xpBar.style.width=Math.min((player.xp/xpNeeded())*100,100)+"%";
+
+  if(player.boost>1){
+    boostText.innerText="🔥 Boost x"+player.boost+" ativo!";
+  }else{
+    boostText.innerText="";
+  }
+
+  if(player.level>=20){
+    title.innerText="Impulse Game 🚀 (Foguete Lendário desbloqueado!)";
+  }
+
   renderShop();
 }
 
@@ -187,12 +229,10 @@ function show(id){
 
 function clickGame(){
   const now=Date.now();
-
-  if(now-player.lastClick<120){return;} // anti-macro
-
+  if(now-player.lastClick<120)return;
   if(player.energy<=0)return;
 
-  if(now-player.lastClick<800-player.upgrades.speed*50){
+  if(now-player.lastClick<800-player.upgrades.speed*40){
     player.combo=Math.min(player.combo+1,6);
   }else{
     player.combo=1;
@@ -200,13 +240,18 @@ function clickGame(){
 
   player.lastClick=now;
 
-  const gain=Math.floor(player.upgrades.power*player.combo);
-  player.coins+=gain;
+  let gain=player.upgrades.power*player.combo;
+  if(player.boost>1)gain*=player.boost;
+
+  player.coins+=Math.floor(gain);
   player.energy--;
   player.xp+=1+player.combo;
   player.clicks++;
 
-  createParticles();
+  if(player.boostEnd && now>player.boostEnd){
+    player.boost=1;
+  }
+
   levelUp();
   checkMissions();
   save();updateUI();
@@ -218,6 +263,30 @@ function levelUp(){
     player.energy=Math.min(player.energy+20,100);
     player.xp=0;
   }
+}
+
+function openChest(){
+  if(player.coins<200)return alert("Precisa de 200 moedas.");
+  player.coins-=200;
+
+  const roll=Math.random();
+
+  if(roll<0.6){
+    player.coins+=150;
+    alert("Baú comum: +150 moedas");
+  }
+  else if(roll<0.9){
+    player.boost=2;
+    player.boostEnd=Date.now()+15000;
+    alert("Baú raro: Boost x2 por 15s!");
+  }
+  else{
+    player.boost=3;
+    player.boostEnd=Date.now()+15000;
+    alert("BAÚ ÉPICO: Boost x3 por 15s!");
+  }
+
+  save();updateUI();
 }
 
 function renderShop(){
@@ -240,17 +309,8 @@ function buy(type,cost){
 }
 
 function genMission(){
-  const goalClicks=100+Math.floor(Math.random()*200);
-  const goalCoins=200+Math.floor(Math.random()*400);
-  const goalLevel=2+Math.floor(Math.random()*4);
-
-  const types=[
-    {text:`Faça ${goalClicks} cliques`,check:()=>player.clicks>=goalClicks},
-    {text:`Ganhe ${goalCoins} moedas`,check:()=>player.coins>=goalCoins},
-    {text:`Alcance nível ${goalLevel}`,check:()=>player.level>=goalLevel}
-  ];
-
-  return {...types[Math.floor(Math.random()*types.length)],complete:false};
+  const goal=100+Math.floor(Math.random()*200);
+  return {text:`Faça ${goal} cliques`,check:()=>player.clicks>=goal,complete:false};
 }
 
 function checkMissions(){
@@ -261,8 +321,7 @@ function checkMissions(){
   player.missions.active.forEach(m=>{
     if(!m.complete && m.check()){
       m.complete=true;
-      player.coins+=150;
-      player.missions.history.push(m.text);
+      player.coins+=200;
     }
   });
 }
@@ -277,11 +336,12 @@ async function fetchRank(){
   try{
     const r=await fetch(backendURL);
     const d=await r.json();
+    if(!Array.isArray(d))throw "err";
     rankList.innerHTML="<ol>"+d.slice(0,10).map(p=>
-      `<li>${p.name} — ⭐ ${p.score}</li>`
+      `<li>${p.name} — ⭐ ${p.score||p.level}</li>`
     ).join("")+"</ol>";
   }catch{
-    rankList.innerHTML="Erro ao carregar ranking";
+    rankList.innerHTML="Ranking indisponível no momento.";
   }
 }
 
@@ -304,30 +364,21 @@ async function sendRank(){
   fetchRank();
 }
 
-function createParticles(){
-  for(let i=0;i<4;i++){
-    const p=document.createElement("div");
-    p.className="particle";
-    p.style.left=(50+Math.random()*60-30)+"%";
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),1000);
-  }
-}
-
-function dailyReward(){
-  const today=new Date().toISOString().slice(0,10);
-  if(player.lastDaily!==today){
-    player.lastDaily=today;
-    player.coins+=200;
-  }
-}
-
 setInterval(()=>{
   if(player.energy<100){
     player.energy++;
     save();updateUI();
   }
 },5000);
+
+function dailyReward(){
+  const today=new Date().toISOString().slice(0,10);
+  if(player.lastDaily!==today){
+    player.lastDaily=today;
+    player.streak++;
+    player.coins+=200+player.streak*20;
+  }
+}
 
 load();
 dailyReward();
