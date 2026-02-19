@@ -6,363 +6,334 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-
-/* =======================
-   IMPULSE GAME — VISUAL PRO
-   ======================= */
-
-body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #0d1a36, #081025);
-  color: #edf2f7;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center;
+body{
+  margin:0;
+  background:linear-gradient(135deg,#0d1a36,#081025);
+  color:#edf2f7;
+  font-family:Segoe UI;
+  text-align:center;
+  overflow-x:hidden;
 }
 
-h1 {
-  margin-top: 14px;
-  font-size: 32px;
-  font-weight: bold;
-  text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+h1{margin-top:12px;font-size:26px;}
+
+.stats{font-size:14px;margin:6px 0;}
+
+.progress-container{
+  width:85%;
+  height:18px;
+  background:rgba(255,255,255,0.15);
+  border-radius:10px;
+  margin:8px auto;
+  overflow:hidden;
 }
 
-.stats {
-  font-size: 18px;
-  margin: 10px 0;
+.progress-inner{
+  height:100%;
+  background:linear-gradient(90deg,#22c55e,#3b82f6,#6366f1);
+  width:0%;
+  transition:0.4s;
 }
 
-.progress-container {
-  width: 85%;
-  height: 22px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 14px;
-  margin: 6px auto 14px auto;
-  border: 2px solid #0f2040;
-  overflow: hidden;
+.screen{display:none;padding-bottom:80px;}
+.screen.active{display:block;}
+
+.section{
+  margin:12px auto;
+  width:90%;
+  padding:14px;
+  background:rgba(255,255,255,0.08);
+  border-radius:14px;
 }
 
-.progress-inner {
-  height: 100%;
-  background: linear-gradient(90deg, #22c55e, #3b82f6, #6366f1);
-  width: 0;
-  border-radius: 14px;
-  transition: width 0.7s ease;
+button{
+  margin:6px;
+  padding:14px 22px;
+  font-size:16px;
+  border-radius:12px;
+  border:none;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-button {
-  margin: 6px;
-  padding: 14px 28px;
-  font-size: 20px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0px 5px 10px rgba(0,0,0,0.35);
-  transition: transform 0.15s ease, filter 0.15s ease;
+.btn-main{background:#22c55e;}
+.btn-blue{background:#3b82f6;}
+
+.navbar{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:#0f172a;
+  padding:10px 0;
 }
 
-button:hover {
-  transform: scale(1.07);
-  filter: brightness(1.15);
+.navbar button{
+  background:none;
+  border:none;
+  color:white;
+  font-size:13px;
 }
 
-.btn-main {
-  background: #22c55e;
-}
+.combo{font-size:13px;color:#22c55e;}
 
-.btn-blue {
-  background: #3b82f6;
+.particle{
+  position:absolute;
+  width:6px;height:6px;
+  background:#22c55e;
+  border-radius:50%;
+  animation:rise 1s ease-out forwards;
 }
-
-.btn-disabled {
-  background: #6b7280;
-  color: #cbd5e1;
-  cursor: not-allowed;
-  opacity: 0.7;
+@keyframes rise{
+  from{opacity:1;transform:translateY(0);}
+  to{opacity:0;transform:translateY(-60px);}
 }
-
-.section {
-  margin-top: 16px;
-  padding: 14px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.18);
-  width: 88%;
-  backdrop-filter: blur(6px);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#rankList li {
-  text-align: left;
-  font-size: 18px;
-  margin: 3px 0;
-  padding: 4px 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-}
-
-#notif {
-  position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #2563eb;
-  color: #fff;
-  font-size: 21px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  opacity: 0;
-  z-index: 9999;
-  text-shadow: 0px 1px 4px rgba(0,0,0,0.45);
-}
-
-.particle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #22c55e;
-  border-radius: 50%;
-  animation: rise 2s ease-out forwards;
-}
-@keyframes rise {
-  from { opacity: 0.8; transform: translateY(0px) scale(1); }
-  to { opacity: 0; transform: translateY(-100px) scale(1.6); }
-}
-
 </style>
 </head>
+
 <body>
 
 <h1>Impulse Game 🚀</h1>
 
 <div class="stats">
-  🪙 <span id="coinsDisplay">0</span> |
-  ⚡ <span id="energyDisplay">0</span>/100 |
-  ⭐ <span id="levelDisplay">1</span> |
-  🔥 <span id="xpDisplay">0</span>
+🪙 <span id="coins">0</span> |
+⚡ <span id="energy">0</span>/100 |
+⭐ <span id="level">1</span> |
+🔥 <span id="xp">0</span>
+</div>
+
+<div class="combo">
+⚡ Combo: x<span id="combo">1</span>
 </div>
 
 <div class="progress-container">
-  <div id="xpBar" class="progress-inner"></div>
+<div id="xpBar" class="progress-inner"></div>
 </div>
 
-<button class="btn-main" onclick="btnClick()">TOCAR!</button>
-<button class="btn-blue" onclick="openMenu('upgrades')">Upgrades</button>
-<button class="btn-blue" onclick="openMenu('missions')">Missões</button>
-<button class="btn-blue" onclick="openMenu('ranking')">Ranking</button>
+<div id="home" class="screen active">
+<button class="btn-main" onclick="clickGame()">TOCAR!</button>
+</div>
 
-<div id="notif"></div>
-<div id="menuArea"></div>
+<div id="upgrades" class="screen">
+<div class="section">
+<h3>Loja</h3>
+<div id="shopArea"></div>
+</div>
+</div>
 
-<!-- Sons embutidos (base64) -->
-<audio id="soundClick"></audio>
-<audio id="soundLevel"></audio>
-<audio id="soundMission"></audio>
-<audio id="soundRank"></audio>
+<div id="missions" class="screen">
+<div class="section">
+<h3>Missões</h3>
+<div id="missionList"></div>
+</div>
+</div>
+
+<div id="ranking" class="screen">
+<div class="section">
+<h3>Ranking Global</h3>
+<div id="rankList">Carregando...</div>
+<button class="btn-blue" onclick="sendRank()">Enviar Score</button>
+</div>
+</div>
+
+<div class="navbar">
+<button onclick="show('home')">Home</button>
+<button onclick="show('upgrades')">Loja</button>
+<button onclick="show('missions')">Missões</button>
+<button onclick="show('ranking')">Ranking</button>
+</div>
 
 <script>
-// =======================
-// 🌐 BACKEND RANKING
-// =======================
-const backendURL = "https://script.google.com/macros/s/AKfycbxYj0ldxCreMr31GCFHbZmm9VTPRh-Lug3jdajGldnO80TtfYrmhHota2OstiQ2WLFE/exec";
 
-// =======================
-// 🎧 SONS BASE64
-// =======================
-document.getElementById("soundClick").src = "data:audio/mp3;base64,//uQxAAAAAAD...";
-document.getElementById("soundLevel").src = "data:audio/mp3;base64,//uQxAAA...";
-document.getElementById("soundMission").src = "data:audio/mp3;base64,//uQxAAA...";
-document.getElementById("soundRank").src = "data:audio/mp3;base64,//uQxAAA...";
+const backendURL="https://script.google.com/macros/s/AKfycbxYj0ldxCreMr31GCFHbZmm9VTPRh-Lug3jdajGldnO80TtfYrmhHota2OstiQ2WLFE/exec";
 
-// =======================
-// 🧠 JOGADOR
-// =======================
-const player = {
+const player={
   name:"",
   coins:0,
   energy:100,
   level:1,
   xp:0,
+  clicks:0,
+  combo:1,
+  lastClick:0,
+  lastDaily:"",
   upgrades:{power:1,speed:0},
   missions:{active:[],history:[]}
 };
 
-// =======================
-// 🎯 MISSÕES DINÂMICAS
-// =======================
-function rand(x){return Math.floor(Math.random()*x);}
-function genMission() {
-  const types = [
-    { text:() => `Faça ${50+rand(100)} cliques`, check:()=>player.clicks>=0 },
-    { text:() => `Ganhe ${150+rand(350)} moedas`, check:()=>player.coins>=0 },
-    { text:() => `Avance ao nível ${2+rand(8)}`, check:()=>player.level>=0 }
-  ];
-  const m = types[rand(types.length)];
-  return { text: m.text(), check: m.check, complete: false };
+function save(){localStorage.setItem("impulse_stable",JSON.stringify(player));}
+function load(){const d=localStorage.getItem("impulse_stable");if(d)Object.assign(player,JSON.parse(d));}
+
+function xpNeeded(){return Math.floor(60*Math.pow(player.level,1.2));}
+
+function updateUI(){
+  coins.innerText=player.coins;
+  energy.innerText=player.energy;
+  level.innerText=player.level;
+  xp.innerText=player.xp;
+  combo.innerText=player.combo;
+  xpBar.style.width=Math.min((player.xp/xpNeeded())*100,100)+"%";
+  renderShop();
 }
 
-// LOAD + SAVE
-function saveAll(){ localStorage.setItem("impulse_final_v",JSON.stringify(player)); }
-function loadAll(){ const d = localStorage.getItem("impulse_final_v"); if(d) Object.assign(player,JSON.parse(d)); }
-
-// Notify
-function showNotif(msg){
-  const n=document.getElementById("notif");  
-  n.innerText=msg;
-  n.style.opacity="1";
-  setTimeout(()=> { n.style.opacity="0"; },2400);
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="ranking")fetchRank();
+  if(id==="missions")renderMissions();
 }
 
-// UPDATE DISPLAY
-function updateDisplay(){
-  document.getElementById("coinsDisplay").innerText = player.coins;
-  document.getElementById("energyDisplay").innerText = player.energy;
-  document.getElementById("levelDisplay").innerText = player.level;
-  document.getElementById("xpDisplay").innerText = player.xp;
-  updateBar();
-}
+function clickGame(){
+  const now=Date.now();
 
-// XP BAR
-function updateBar(){
-  const pct=Math.min((player.xp/(player.level*60))*100,100);
-  document.getElementById("xpBar").style.width=pct+"%";
-}
+  if(now-player.lastClick<120){return;} // anti-macro
 
-// PRIMARY CLICK
-function btnClick(){
-  document.getElementById("soundClick").play();
-  if(player.energy <=0){ showNotif("⚡ Sem energia!"); return; }
-  player.coins += player.upgrades.power;
+  if(player.energy<=0)return;
+
+  if(now-player.lastClick<800-player.upgrades.speed*50){
+    player.combo=Math.min(player.combo+1,6);
+  }else{
+    player.combo=1;
+  }
+
+  player.lastClick=now;
+
+  const gain=Math.floor(player.upgrades.power*player.combo);
+  player.coins+=gain;
   player.energy--;
-  player.xp++;
-  player.clicks = (player.clicks||0)+1;
+  player.xp+=1+player.combo;
+  player.clicks++;
+
   createParticles();
-  checkLevel();
+  levelUp();
   checkMissions();
-  saveAll();
-  updateDisplay();
+  save();updateUI();
 }
 
-// LEVEL UP
-function checkLevel(){
-  if(player.xp >= player.level*60){
+function levelUp(){
+  if(player.xp>=xpNeeded()){
     player.level++;
-    player.energy = Math.min(player.energy+20,100);
+    player.energy=Math.min(player.energy+20,100);
     player.xp=0;
-    document.getElementById("soundLevel").play();
-    showNotif(`⭐ Subiu para Nível ${player.level}!`);
   }
 }
 
-// MISSIONS
+function renderShop(){
+  const powerCost=Math.floor(100*Math.pow(1.25,player.upgrades.power));
+  const speedCost=Math.floor(150*Math.pow(1.3,player.upgrades.speed));
+
+  shopArea.innerHTML=`
+    <p>Power: ${player.upgrades.power}</p>
+    <button onclick="buy('power',${powerCost})">Power +1 (${powerCost})</button>
+    <p>Speed: ${player.upgrades.speed}</p>
+    <button onclick="buy('speed',${speedCost})">Speed +1 (${speedCost})</button>
+  `;
+}
+
+function buy(type,cost){
+  if(player.coins<cost)return;
+  player.coins-=cost;
+  player.upgrades[type]++;
+  save();updateUI();
+}
+
+function genMission(){
+  const goalClicks=100+Math.floor(Math.random()*200);
+  const goalCoins=200+Math.floor(Math.random()*400);
+  const goalLevel=2+Math.floor(Math.random()*4);
+
+  const types=[
+    {text:`Faça ${goalClicks} cliques`,check:()=>player.clicks>=goalClicks},
+    {text:`Ganhe ${goalCoins} moedas`,check:()=>player.coins>=goalCoins},
+    {text:`Alcance nível ${goalLevel}`,check:()=>player.level>=goalLevel}
+  ];
+
+  return {...types[Math.floor(Math.random()*types.length)],complete:false};
+}
+
 function checkMissions(){
-  if(!player.missions.active || player.missions.active.length<2){
+  if(player.missions.active.length<2){
     player.missions.active=[genMission(),genMission()];
   }
+
   player.missions.active.forEach(m=>{
-    if(!m.complete && m.check(player)){
+    if(!m.complete && m.check()){
       m.complete=true;
-      document.getElementById("soundMission").play();
-      showNotif(`🎉 Missão concluída: ${m.text}`);
-      player.coins+=50+rand(80);
+      player.coins+=150;
       player.missions.history.push(m.text);
     }
   });
 }
 
-// OPEN MENUS
-function openMenu(type){
-  let html="";
-  if(type=="upgrades"){
-    html += `<div class='section'><h3>Upgrades</h3>`;
-    html += btnUI("Power +1 (100)",player.coins>=100,()=>buy("power",100));
-    html += btnUI("Speed +1 (150)",player.coins>=150,()=>buy("speed",150));
-    html += "</div>";
-  }
-  if(type=="missions"){
-    html += `<div class='section'><h3>Missões</h3>`;
-    player.missions.active.forEach(m=>{
-      html += `<p>${m.complete?"✔️":"❌"} ${m.text}</p>`;
-    });
-    html += "</div>";
-  }
-  if(type=="ranking"){
-    html += `<div class='section'><h3>Ranking Global</h3><div id='rankList'>Carregando...</div></div>`;
-    fetchRank();
-  }
-  document.getElementById("menuArea").innerHTML = html;
+function renderMissions(){
+  missionList.innerHTML=player.missions.active.map(m=>
+    `<p>${m.complete?"✔️":"❌"} ${m.text}</p>`
+  ).join("");
 }
 
-function btnUI(txt,ok,act){
-  return `<button class='${ok?"btn-main":"btn-disabled"}' ${ok?`onclick="${act.name}()"`:``}>${txt}</button><br>`;
-}
-
-// UPGRADES
-function buy(type,cost){
-  if(player.coins<cost){ showNotif("🪙 Moedas insuficientes"); return; }
-  player.coins-=cost;
-  player.upgrades[type]++;
-  saveAll(); updateDisplay(); showNotif(`✔️ Upgrade: ${type}!`);
-}
-
-// RANKING GET
 async function fetchRank(){
-  document.getElementById("soundRank").play();
   try{
-    const res=await fetch(backendURL);
-    const data=await res.json();
-    let out="<ol>";
-    data.slice(0,12).forEach(p=>{
-      out += `<li>${p.name} — ⭐ ${p.score}</li>`;
-    });
-    out+="</ol>";
-    document.getElementById("rankList").innerHTML=out;
-  }catch(e){
-    document.getElementById("rankList").innerHTML="Erro ao carregar ranking"; 
+    const r=await fetch(backendURL);
+    const d=await r.json();
+    rankList.innerHTML="<ol>"+d.slice(0,10).map(p=>
+      `<li>${p.name} — ⭐ ${p.score}</li>`
+    ).join("")+"</ol>";
+  }catch{
+    rankList.innerHTML="Erro ao carregar ranking";
   }
 }
 
-// RANKING POST
 async function sendRank(){
   const name=prompt("Digite seu nick:");
-  if(!name) return;
-  player.name=name; saveAll();
-  await fetch(backendURL,{method:"POST",body:JSON.stringify({
-    name:player.name,
-    coins:player.coins,
-    level:player.level,
-    xp:player.xp
-  })});
-  showNotif("📤 Score enviado!");
+  if(!name)return;
+  player.name=name;save();
+
+  try{
+    await fetch(backendURL,{
+      method:"POST",
+      body:JSON.stringify({
+        name:player.name,
+        coins:player.coins,
+        level:player.level,
+        xp:player.xp
+      })
+    });
+  }catch{}
   fetchRank();
 }
 
-// PARTICLES
 function createParticles(){
-  for(let i=0;i<7;i++){
+  for(let i=0;i<4;i++){
     const p=document.createElement("div");
     p.className="particle";
-    p.style.left=(50+rand(80)-40)+"%";
+    p.style.left=(50+Math.random()*60-30)+"%";
     document.body.appendChild(p);
-    setTimeout(()=>p.remove(),2000);
+    setTimeout(()=>p.remove(),1000);
+  }
+}
+
+function dailyReward(){
+  const today=new Date().toISOString().slice(0,10);
+  if(player.lastDaily!==today){
+    player.lastDaily=today;
+    player.coins+=200;
   }
 }
 
 setInterval(()=>{
   if(player.energy<100){
     player.energy++;
-    saveAll(); updateDisplay();
+    save();updateUI();
   }
 },5000);
 
-// INIT
-loadAll();
+load();
+dailyReward();
+updateUI();
 Telegram.WebApp.expand();
-updateDisplay();
 
 </script>
 </body>
 </html>
-
