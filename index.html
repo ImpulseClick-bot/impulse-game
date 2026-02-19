@@ -2,386 +2,229 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Impulse Game 🚀</title>
+<title>Impulse: Ascensão Infinita 🚀</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
-body{
-  margin:0;
-  background:linear-gradient(135deg,#0d1a36,#081025);
-  color:#edf2f7;
-  font-family:Segoe UI;
-  text-align:center;
-  overflow-x:hidden;
-}
-
-h1{margin-top:12px;font-size:26px;}
-
-.stats{font-size:14px;margin:6px 0;}
-
-.progress-container{
-  width:85%;
-  height:18px;
-  background:rgba(255,255,255,0.15);
-  border-radius:10px;
-  margin:8px auto;
-  overflow:hidden;
-}
-
-.progress-inner{
-  height:100%;
-  background:linear-gradient(90deg,#22c55e,#3b82f6,#6366f1);
-  width:0%;
-  transition:0.4s;
-}
-
-.screen{display:none;padding-bottom:90px;}
-.screen.active{display:block;}
-
-.section{
-  margin:12px auto;
-  width:90%;
-  padding:16px;
-  background:rgba(255,255,255,0.08);
-  border-radius:16px;
-}
-
-button{
-  margin:6px;
-  padding:14px 22px;
-  font-size:15px;
-  border-radius:12px;
-  border:none;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.btn-main{background:#22c55e;}
-.btn-blue{background:#3b82f6;}
-.btn-gold{background:#f59e0b;}
-
-.navbar{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  display:flex;
-  justify-content:space-around;
-  background:#0f172a;
-  padding:10px 0;
-}
-
-.navbar button{
-  background:none;
-  border:none;
-  color:white;
-  font-size:13px;
-}
-
-.combo{font-size:13px;color:#22c55e;}
-
-.league{
-  font-size:14px;
-  margin-top:4px;
-}
-
-.boost{
-  color:#f59e0b;
-  font-size:13px;
-}
-
-.goal{
-  font-size:13px;
-  margin-top:6px;
-  color:#38bdf8;
-}
-
+body{margin:0;background:linear-gradient(135deg,#0f172a,#020617);color:#e2e8f0;font-family:Segoe UI;text-align:center}
+h1{margin:10px 0;font-size:20px}
+.stats{font-size:12px;margin:6px}
+.section{margin:10px auto;width:92%;padding:12px;background:rgba(255,255,255,0.06);border-radius:12px}
+button{margin:5px;padding:12px 16px;border:none;border-radius:10px;font-weight:bold;color:white;cursor:pointer}
+.green{background:#22c55e}
+.blue{background:#3b82f6}
+.gold{background:#f59e0b}
+.red{background:#ef4444}
+.nav{position:fixed;bottom:0;width:100%;background:#0f172a;display:flex;justify-content:space-around;padding:8px 0}
+.screen{display:none;padding-bottom:80px}
+.screen.active{display:block}
+.small{font-size:11px;color:#94a3b8}
 </style>
 </head>
-
 <body>
 
-<h1 id="title">Impulse Game 🚀</h1>
+<h1>Impulse: Ascensão Infinita 🚀</h1>
 
 <div class="stats">
 🪙 <span id="coins">0</span> |
-⚡ <span id="energy">0</span>/100 |
 ⭐ <span id="level">1</span> |
-🔥 <span id="xp">0</span>
-</div>
-
-<div class="combo">
-⚡ Combo: x<span id="combo">1</span>
-</div>
-
-<div class="league">
-🏆 Liga: <span id="league">Bronze</span>
-</div>
-
-<div class="boost">
-<span id="boostText"></span>
-</div>
-
-<div class="goal">
-🎯 Meta: Alcance nível 20 para desbloquear Foguete Lendário
-</div>
-
-<div class="progress-container">
-<div id="xpBar" class="progress-inner"></div>
+🔥 <span id="xp">0</span> |
+💎 <span id="prestige">0</span> |
+🏆 <span id="league">Bronze</span>
 </div>
 
 <div id="home" class="screen active">
-<button class="btn-main" onclick="clickGame()">TOCAR!</button>
-<button class="btn-gold" onclick="openChest()">Abrir Baú 🎁</button>
+<div class="section">
+<button class="green" onclick="clickGame()">TOCAR</button>
+<button class="gold" onclick="openChest()">BAÚ</button>
 </div>
 
-<div id="upgrades" class="screen">
 <div class="section">
-<h3>Loja</h3>
+<button class="red" onclick="prestigeReset()">RENASCER</button>
+<div class="small">Requer nível 30 ou 5M moedas totais</div>
+</div>
+</div>
+
+<div id="shop" class="screen">
+<div class="section">
+<h3>Upgrades</h3>
 <div id="shopArea"></div>
 </div>
-</div>
 
-<div id="missions" class="screen">
 <div class="section">
-<h3>Missões</h3>
-<div id="missionList"></div>
+<h3>Artefatos (<span id="slotInfo"></span>)</h3>
+<div id="artifactArea"></div>
 </div>
 </div>
 
-<div id="ranking" class="screen">
-<div class="section">
-<h3>Ranking Global</h3>
-<div id="rankList">Carregando...</div>
-<button class="btn-blue" onclick="sendRank()">Enviar Score</button>
-</div>
-</div>
-
-<div class="navbar">
+<div class="nav">
 <button onclick="show('home')">Home</button>
-<button onclick="show('upgrades')">Loja</button>
-<button onclick="show('missions')">Missões</button>
-<button onclick="show('ranking')">Ranking</button>
+<button onclick="show('shop')">Loja</button>
 </div>
 
 <script>
 
-const backendURL="https://script.google.com/macros/s/AKfycbxYj0ldxCreMr31GCFHbZmm9VTPRh-Lug3jdajGldnO80TtfYrmhHota2OstiQ2WLFE/exec";
+const MAX_ARTIFACTS = 3;
 
 const player={
-  name:"",
-  coins:0,
-  energy:100,
-  level:1,
-  xp:0,
-  clicks:0,
-  combo:1,
-  lastClick:0,
-  upgrades:{power:1,speed:0},
-  boost:0,
-  boostEnd:0,
-  streak:0,
-  lastDaily:"",
-  missions:{active:[],history:[]}
+coins:0,
+level:1,
+xp:0,
+totalCoins:0,
+prestige:0,
+upgrades:{power:1},
+artifacts:[],
+lastLogin:Date.now()
 };
 
-function save(){localStorage.setItem("impulse_pro",JSON.stringify(player));}
-function load(){const d=localStorage.getItem("impulse_pro");if(d)Object.assign(player,JSON.parse(d));}
-
-function xpNeeded(){return Math.floor(60*Math.pow(player.level,1.25));}
-
-function getLeague(){
-  if(player.level>=25)return "Diamante";
-  if(player.level>=18)return "Platina";
-  if(player.level>=12)return "Ouro";
-  if(player.level>=6)return "Prata";
-  return "Bronze";
+function save(){
+player.lastLogin=Date.now();
+localStorage.setItem("impulse_final",JSON.stringify(player));
 }
 
-function updateUI(){
-  coins.innerText=player.coins;
-  energy.innerText=player.energy;
-  level.innerText=player.level;
-  xp.innerText=player.xp;
-  combo.innerText=player.combo;
-  league.innerText=getLeague();
-  xpBar.style.width=Math.min((player.xp/xpNeeded())*100,100)+"%";
-
-  if(player.boost>1){
-    boostText.innerText="🔥 Boost x"+player.boost+" ativo!";
-  }else{
-    boostText.innerText="";
-  }
-
-  if(player.level>=20){
-    title.innerText="Impulse Game 🚀 (Foguete Lendário desbloqueado!)";
-  }
-
-  renderShop();
+function load(){
+const d=localStorage.getItem("impulse_final");
+if(d)Object.assign(player,JSON.parse(d));
 }
 
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  if(id==="ranking")fetchRank();
-  if(id==="missions")renderMissions();
+function league(){
+if(player.prestige>=100)return "Diamante";
+if(player.prestige>=50)return "Platina";
+if(player.prestige>=20)return "Ouro";
+if(player.prestige>=5)return "Prata";
+return "Bronze";
+}
+
+function prestigeMultiplier(){
+return 1 + player.prestige*0.05;
+}
+
+function artifactMultiplier(){
+let m=1;
+player.artifacts.forEach(a=>m+=a.value);
+return m;
+}
+
+function totalMultiplier(){
+return prestigeMultiplier()*artifactMultiplier();
+}
+
+function xpNeeded(){
+return Math.floor(150*Math.pow(player.level,1.35));
+}
+
+function clickValue(){
+return player.upgrades.power*totalMultiplier();
 }
 
 function clickGame(){
-  const now=Date.now();
-  if(now-player.lastClick<120)return;
-  if(player.energy<=0)return;
-
-  if(now-player.lastClick<800-player.upgrades.speed*40){
-    player.combo=Math.min(player.combo+1,6);
-  }else{
-    player.combo=1;
-  }
-
-  player.lastClick=now;
-
-  let gain=player.upgrades.power*player.combo;
-  if(player.boost>1)gain*=player.boost;
-
-  player.coins+=Math.floor(gain);
-  player.energy--;
-  player.xp+=1+player.combo;
-  player.clicks++;
-
-  if(player.boostEnd && now>player.boostEnd){
-    player.boost=1;
-  }
-
-  levelUp();
-  checkMissions();
-  save();updateUI();
+const gain=clickValue();
+player.coins+=gain;
+player.totalCoins+=gain;
+player.xp+=10;
+if(player.xp>=xpNeeded()){
+player.xp=0;
+player.level++;
 }
-
-function levelUp(){
-  if(player.xp>=xpNeeded()){
-    player.level++;
-    player.energy=Math.min(player.energy+20,100);
-    player.xp=0;
-  }
+save();updateUI();
 }
 
 function openChest(){
-  if(player.coins<200)return alert("Precisa de 200 moedas.");
-  player.coins-=200;
+if(player.coins<1000)return alert("Precisa 1000 moedas.");
+player.coins-=1000;
 
-  const roll=Math.random();
+const roll=Math.random();
 
-  if(roll<0.6){
-    player.coins+=150;
-    alert("Baú comum: +150 moedas");
-  }
-  else if(roll<0.9){
-    player.boost=2;
-    player.boostEnd=Date.now()+15000;
-    alert("Baú raro: Boost x2 por 15s!");
-  }
-  else{
-    player.boost=3;
-    player.boostEnd=Date.now()+15000;
-    alert("BAÚ ÉPICO: Boost x3 por 15s!");
-  }
+if(roll<0.6){
+player.coins+=600;
+alert("Baú comum +600 moedas");
+}
+else if(roll<0.9){
+if(player.artifacts.length<MAX_ARTIFACTS){
+player.artifacts.push({value:0.15});
+alert("Artefato Raro +15%");
+}else alert("Slots cheios.");
+}
+else{
+if(player.artifacts.length<MAX_ARTIFACTS){
+player.artifacts.push({value:0.30});
+alert("ARTEFATO LENDÁRIO +30%");
+}else alert("Slots cheios.");
+}
+save();updateUI();
+}
 
-  save();updateUI();
+function prestigeReset(){
+if(player.level<30 && player.totalCoins<5000000){
+return alert("Ainda não pode renascer.");
+}
+
+const gained=Math.floor(Math.sqrt(player.totalCoins/500000));
+if(gained<=0)return;
+
+player.prestige+=gained;
+
+player.coins=0;
+player.level=1;
+player.xp=0;
+player.totalCoins=0;
+player.upgrades={power:1};
+
+alert("Você ganhou "+gained+" Fragmentos Cósmicos!");
+
+save();updateUI();
+}
+
+function offlineGain(){
+const now=Date.now();
+const diff=(now-player.lastLogin)/1000;
+const gain=clickValue()*diff*0.6;
+
+if(gain>0){
+player.coins+=gain;
+player.totalCoins+=gain;
+alert("Offline: +"+Math.floor(gain)+" moedas");
+}
 }
 
 function renderShop(){
-  const powerCost=Math.floor(100*Math.pow(1.25,player.upgrades.power));
-  const speedCost=Math.floor(150*Math.pow(1.3,player.upgrades.speed));
+const cost=Math.floor(200*Math.pow(1.20,player.upgrades.power));
 
-  shopArea.innerHTML=`
-    <p>Power: ${player.upgrades.power}</p>
-    <button onclick="buy('power',${powerCost})">Power +1 (${powerCost})</button>
-    <p>Speed: ${player.upgrades.speed}</p>
-    <button onclick="buy('speed',${speedCost})">Speed +1 (${speedCost})</button>
-  `;
+shopArea.innerHTML=`
+<p>Power: ${player.upgrades.power}</p>
+<button onclick="buyPower(${cost})">+1 Power (${cost})</button>
+`;
+
+slotInfo.innerText=player.artifacts.length+"/"+MAX_ARTIFACTS;
+
+artifactArea.innerHTML=player.artifacts.length===0
+? "<p>Nenhum artefato.</p>"
+: player.artifacts.map((a,i)=>`<p>#${i+1} +${Math.floor(a.value*100)}%</p>`).join("");
 }
 
-function buy(type,cost){
-  if(player.coins<cost)return;
-  player.coins-=cost;
-  player.upgrades[type]++;
-  save();updateUI();
+function buyPower(cost){
+if(player.coins<cost)return;
+player.coins-=cost;
+player.upgrades.power++;
+save();updateUI();
 }
 
-function genMission(){
-  const goal=100+Math.floor(Math.random()*200);
-  return {text:`Faça ${goal} cliques`,check:()=>player.clicks>=goal,complete:false};
+function show(id){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
-function checkMissions(){
-  if(player.missions.active.length<2){
-    player.missions.active=[genMission(),genMission()];
-  }
-
-  player.missions.active.forEach(m=>{
-    if(!m.complete && m.check()){
-      m.complete=true;
-      player.coins+=200;
-    }
-  });
-}
-
-function renderMissions(){
-  missionList.innerHTML=player.missions.active.map(m=>
-    `<p>${m.complete?"✔️":"❌"} ${m.text}</p>`
-  ).join("");
-}
-
-async function fetchRank(){
-  try{
-    const r=await fetch(backendURL);
-    const d=await r.json();
-    if(!Array.isArray(d))throw "err";
-    rankList.innerHTML="<ol>"+d.slice(0,10).map(p=>
-      `<li>${p.name} — ⭐ ${p.score||p.level}</li>`
-    ).join("")+"</ol>";
-  }catch{
-    rankList.innerHTML="Ranking indisponível no momento.";
-  }
-}
-
-async function sendRank(){
-  const name=prompt("Digite seu nick:");
-  if(!name)return;
-  player.name=name;save();
-
-  try{
-    await fetch(backendURL,{
-      method:"POST",
-      body:JSON.stringify({
-        name:player.name,
-        coins:player.coins,
-        level:player.level,
-        xp:player.xp
-      })
-    });
-  }catch{}
-  fetchRank();
-}
-
-setInterval(()=>{
-  if(player.energy<100){
-    player.energy++;
-    save();updateUI();
-  }
-},5000);
-
-function dailyReward(){
-  const today=new Date().toISOString().slice(0,10);
-  if(player.lastDaily!==today){
-    player.lastDaily=today;
-    player.streak++;
-    player.coins+=200+player.streak*20;
-  }
+function updateUI(){
+coins.innerText=Math.floor(player.coins);
+level.innerText=player.level;
+xp.innerText=Math.floor(player.xp);
+prestige.innerText=player.prestige;
+leagueSpan=document.getElementById("league");
+leagueSpan.innerText=league();
+renderShop();
 }
 
 load();
-dailyReward();
+offlineGain();
 updateUI();
 Telegram.WebApp.expand();
 
