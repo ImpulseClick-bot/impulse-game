@@ -1,233 +1,307 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Impulse: Ascensão Infinita 🚀</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABYSSARA</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:linear-gradient(135deg,#0f172a,#020617);color:#e2e8f0;font-family:Segoe UI;text-align:center}
-h1{margin:10px 0;font-size:20px}
-.stats{font-size:12px;margin:6px}
-.section{margin:10px auto;width:92%;padding:12px;background:rgba(255,255,255,0.06);border-radius:12px}
-button{margin:5px;padding:12px 16px;border:none;border-radius:10px;font-weight:bold;color:white;cursor:pointer}
-.green{background:#22c55e}
-.blue{background:#3b82f6}
-.gold{background:#f59e0b}
-.red{background:#ef4444}
-.nav{position:fixed;bottom:0;width:100%;background:#0f172a;display:flex;justify-content:space-around;padding:8px 0}
-.screen{display:none;padding-bottom:80px}
-.screen.active{display:block}
-.small{font-size:11px;color:#94a3b8}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Orbitron',sans-serif}
+body{
+background:radial-gradient(circle at 50% 20%,#2b1a36,#140f1f 60%);
+color:#fff;
+overflow:hidden;
+}
+#game{
+display:flex;
+flex-direction:column;
+height:100vh;
+padding:12px;
+}
+.topbar{
+display:flex;
+justify-content:space-between;
+gap:8px;
+}
+.panel{
+flex:1;
+background:rgba(0,0,0,0.35);
+padding:10px;
+border-radius:16px;
+text-align:center;
+backdrop-filter:blur(8px);
+}
+.label{font-size:11px;color:#b2b2b2}
+.value{font-size:18px;color:#ff9f43;font-weight:700}
+.center{
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+position:relative;
+}
+.creature{
+width:130px;
+height:130px;
+border-radius:50%;
+background:radial-gradient(circle,#6c5ce7,#1d1330);
+box-shadow:0 0 40px #6c5ce7;
+position:relative;
+animation:float 3s ease-in-out infinite;
+}
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-12px)}
+100%{transform:translateY(0)}
+}
+.eye{
+width:18px;
+height:18px;
+background:#00f5ff;
+border-radius:50%;
+position:absolute;
+top:45px;
+}
+.left{left:32px}
+.right{right:32px}
+.depth{
+margin-top:18px;
+font-size:26px;
+font-weight:900;
+color:#ff9f43;
+}
+.bar{
+width:95%;
+height:14px;
+background:#000;
+border-radius:20px;
+margin-top:10px;
+overflow:hidden;
+}
+.fill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#ff6b6b,#ff9f43);
+}
+.bossbar{
+width:95%;
+height:12px;
+background:#400000;
+border-radius:20px;
+margin-top:6px;
+overflow:hidden;
+display:none;
+}
+.bossfill{
+height:100%;
+width:100%;
+background:#ff0000;
+}
+.button-area{
+padding:10px 0;
+}
+button{
+width:100%;
+padding:18px;
+border:none;
+border-radius:20px;
+background:linear-gradient(90deg,#ff6b6b,#ff9f43);
+color:#fff;
+font-size:18px;
+font-weight:700;
+cursor:pointer;
+transition:0.15s;
+}
+button:active{transform:scale(0.96)}
+.menu{
+display:flex;
+justify-content:space-between;
+gap:8px;
+margin-top:8px;
+}
+.menu div{
+flex:1;
+background:rgba(0,0,0,0.35);
+padding:12px;
+border-radius:14px;
+text-align:center;
+font-size:12px;
+cursor:pointer;
+}
+.modal{
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+background:#1d1330;
+padding:20px;
+border-radius:20px 20px 0 0;
+display:none;
+max-height:70%;
+overflow-y:auto;
+}
+.upgrade{
+background:#2d1b5a;
+padding:12px;
+border-radius:12px;
+margin:6px 0;
+cursor:pointer;
+}
+.crit{
+position:absolute;
+color:#ff0000;
+font-weight:900;
+animation:pop 0.6s forwards;
+}
+@keyframes pop{
+0%{opacity:1;transform:translateY(0)}
+100%{opacity:0;transform:translateY(-40px)}
+}
 </style>
 </head>
 <body>
-
-<h1>Impulse: Ascensão Infinita 🚀</h1>
-
-<div class="stats">
-🪙 <span id="coins">0</span> |
-⭐ <span id="level">1</span> |
-🔥 <span id="xp">0</span> |
-💎 <span id="prestige">0</span> |
-🏆 <span id="league">Bronze</span>
+<div id="game">
+<div class="topbar">
+<div class="panel"><div class="label">Energia</div><div class="value" id="energy"></div></div>
+<div class="panel"><div class="label">Núcleo</div><div class="value" id="core"></div></div>
+<div class="panel"><div class="label">Poder</div><div class="value" id="power"></div></div>
 </div>
 
-<div id="home" class="screen active">
-<div class="section">
-<button class="green" onclick="clickGame()">TOCAR</button>
-<button class="gold" onclick="openChest()">BAÚ</button>
+<div class="center">
+<div class="creature" onclick="dig()">
+<div class="eye left"></div>
+<div class="eye right"></div>
+</div>
+<div class="depth" id="depthText">0m</div>
+<div class="bar"><div class="fill" id="progress"></div></div>
+<div class="bossbar" id="bossbar"><div class="bossfill" id="bossfill"></div></div>
 </div>
 
-<div class="section">
-<button class="red" onclick="prestigeReset()">RENASCER</button>
-<div class="small">Requer nível 30 ou 5M moedas totais</div>
-</div>
+<div class="button-area">
+<button onclick="dig()">Rasgar Dimensão</button>
 </div>
 
-<div id="shop" class="screen">
-<div class="section">
-<h3>Upgrades</h3>
-<div id="shopArea"></div>
-</div>
-
-<div class="section">
-<h3>Artefatos (<span id="slotInfo"></span>)</h3>
-<div id="artifactArea"></div>
+<div class="menu">
+<div onclick="openUpgrades()">UPGRADES</div>
+<div onclick="openMissions()">MISSÕES</div>
+<div onclick="hardReset()">RESET</div>
 </div>
 </div>
 
-<div class="nav">
-<button onclick="show('home')">Home</button>
-<button onclick="show('shop')">Loja</button>
-</div>
+<div class="modal" id="modal"></div>
 
 <script>
-
-const MAX_ARTIFACTS = 3;
-
-const player={
-coins:0,
-level:1,
-xp:0,
-totalCoins:0,
-prestige:0,
-upgrades:{power:1},
-artifacts:[],
-lastLogin:Date.now()
-};
+let energy=100,maxEnergy=100,depth=0,core=0,power=1,combo=0;
+let boss=false,bossLife=0,bossMax=0;
 
 function save(){
-player.lastLogin=Date.now();
-localStorage.setItem("impulse_final",JSON.stringify(player));
+localStorage.setItem("abyssara",JSON.stringify({energy,maxEnergy,depth,core,power}));
 }
-
 function load(){
-const d=localStorage.getItem("impulse_final");
-if(d)Object.assign(player,JSON.parse(d));
+let d=JSON.parse(localStorage.getItem("abyssara"));
+if(d){energy=d.energy;maxEnergy=d.maxEnergy;depth=d.depth;core=d.core;power=d.power;}
 }
-
-function league(){
-if(player.prestige>=100)return "Diamante";
-if(player.prestige>=50)return "Platina";
-if(player.prestige>=20)return "Ouro";
-if(player.prestige>=5)return "Prata";
-return "Bronze";
-}
-
-function prestigeMultiplier(){
-return 1 + player.prestige*0.05;
-}
-
-function artifactMultiplier(){
-let m=1;
-player.artifacts.forEach(a=>m+=a.value);
-return m;
-}
-
-function totalMultiplier(){
-return prestigeMultiplier()*artifactMultiplier();
-}
-
-function xpNeeded(){
-return Math.floor(150*Math.pow(player.level,1.35));
-}
-
-function clickValue(){
-return player.upgrades.power*totalMultiplier();
-}
-
-function clickGame(){
-const gain=clickValue();
-player.coins+=gain;
-player.totalCoins+=gain;
-player.xp+=10;
-if(player.xp>=xpNeeded()){
-player.xp=0;
-player.level++;
-}
-save();updateUI();
-}
-
-function openChest(){
-if(player.coins<1000)return alert("Precisa 1000 moedas.");
-player.coins-=1000;
-
-const roll=Math.random();
-
-if(roll<0.6){
-player.coins+=600;
-alert("Baú comum +600 moedas");
-}
-else if(roll<0.9){
-if(player.artifacts.length<MAX_ARTIFACTS){
-player.artifacts.push({value:0.15});
-alert("Artefato Raro +15%");
-}else alert("Slots cheios.");
-}
-else{
-if(player.artifacts.length<MAX_ARTIFACTS){
-player.artifacts.push({value:0.30});
-alert("ARTEFATO LENDÁRIO +30%");
-}else alert("Slots cheios.");
-}
-save();updateUI();
-}
-
-function prestigeReset(){
-if(player.level<30 && player.totalCoins<5000000){
-return alert("Ainda não pode renascer.");
-}
-
-const gained=Math.floor(Math.sqrt(player.totalCoins/500000));
-if(gained<=0)return;
-
-player.prestige+=gained;
-
-player.coins=0;
-player.level=1;
-player.xp=0;
-player.totalCoins=0;
-player.upgrades={power:1};
-
-alert("Você ganhou "+gained+" Fragmentos Cósmicos!");
-
-save();updateUI();
-}
-
-function offlineGain(){
-const now=Date.now();
-const diff=(now-player.lastLogin)/1000;
-const gain=clickValue()*diff*0.6;
-
-if(gain>0){
-player.coins+=gain;
-player.totalCoins+=gain;
-alert("Offline: +"+Math.floor(gain)+" moedas");
-}
-}
-
-function renderShop(){
-const cost=Math.floor(200*Math.pow(1.20,player.upgrades.power));
-
-shopArea.innerHTML=`
-<p>Power: ${player.upgrades.power}</p>
-<button onclick="buyPower(${cost})">+1 Power (${cost})</button>
-`;
-
-slotInfo.innerText=player.artifacts.length+"/"+MAX_ARTIFACTS;
-
-artifactArea.innerHTML=player.artifacts.length===0
-? "<p>Nenhum artefato.</p>"
-: player.artifacts.map((a,i)=>`<p>#${i+1} +${Math.floor(a.value*100)}%</p>`).join("");
-}
-
-function buyPower(cost){
-if(player.coins<cost)return;
-player.coins-=cost;
-player.upgrades.power++;
-save();updateUI();
-}
-
-function show(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-
-function updateUI(){
-coins.innerText=Math.floor(player.coins);
-level.innerText=player.level;
-xp.innerText=Math.floor(player.xp);
-prestige.innerText=player.prestige;
-leagueSpan=document.getElementById("league");
-leagueSpan.innerText=league();
-renderShop();
-}
-
 load();
-offlineGain();
-updateUI();
-Telegram.WebApp.expand();
 
+function update(){
+energy=Math.min(energy,maxEnergy);
+document.getElementById("energy").innerText=Math.floor(energy);
+document.getElementById("core").innerText=Math.floor(core);
+document.getElementById("power").innerText=power;
+document.getElementById("depthText").innerText=Math.floor(depth)+"m";
+document.getElementById("progress").style.width=(depth%100)+"%";
+save();
+}
+update();
+
+function dig(){
+if(energy<=0)return;
+energy-=1;
+
+let crit=false;
+let dmg=power;
+if(Math.random()<0.15){
+dmg*=2;
+crit=true;
+showCrit(dmg);
+}
+
+if(boss){
+bossLife-=dmg;
+document.getElementById("bossfill").style.width=(bossLife/bossMax*100)+"%";
+if(bossLife<=0){
+boss=false;
+core+=bossMax*2;
+document.getElementById("bossbar").style.display="none";
+}
+}else{
+depth+=dmg;
+core+=dmg*0.4;
+if(depth%500<dmg){
+spawnBoss();
+}
+}
+update();
+}
+
+function spawnBoss(){
+boss=true;
+bossMax=100+depth*0.5;
+bossLife=bossMax;
+document.getElementById("bossbar").style.display="block";
+document.getElementById("bossfill").style.width="100%";
+}
+
+function showCrit(val){
+let el=document.createElement("div");
+el.className="crit";
+el.innerText="CRIT "+val;
+el.style.left="50%";
+el.style.top="40%";
+document.querySelector(".center").appendChild(el);
+setTimeout(()=>el.remove(),600);
+}
+
+setInterval(()=>{
+if(energy<maxEnergy)energy+=0.8;
+core+=power*0.1;
+update();
+},1000);
+
+function openUpgrades(){
+let m=document.getElementById("modal");
+m.style.display="block";
+m.innerHTML=`
+<h3>Upgrades</h3>
+<div class="upgrade" onclick="buyPower()">Aumentar Poder (Custo ${Math.floor(50*power)})</div>
+<div class="upgrade" onclick="buyEnergy()">Aumentar Energia Máx (Custo ${Math.floor(80*maxEnergy/100)})</div>
+<button onclick="closeModal()">Fechar</button>
+`;
+}
+
+function buyPower(){
+let cost=Math.floor(50*power);
+if(core>=cost){core-=cost;power+=1;update();openUpgrades();}
+}
+function buyEnergy(){
+let cost=Math.floor(80*maxEnergy/100);
+if(core>=cost){core-=cost;maxEnergy+=20;update();openUpgrades();}
+}
+
+function openMissions(){
+let m=document.getElementById("modal");
+m.style.display="block";
+m.innerHTML=`
+<h3>Missões</h3>
+<div class="upgrade">Alcance 1000m</div>
+<div class="upgrade">Derrote 3 Boss</div>
+<div class="upgrade">Ganhe 500 Núcleos</div>
+<button onclick="closeModal()">Fechar</button>
+`;
+}
+function closeModal(){document.getElementById("modal").style.display="none";}
+function hardReset(){localStorage.removeItem("abyssara");location.reload();}
 </script>
 </body>
 </html>
