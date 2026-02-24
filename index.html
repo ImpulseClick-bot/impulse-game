@@ -3,120 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eternal Valhalla: Abyss Walker</title>
+<title>Eternal Valhalla</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI}
 body{
-    background:linear-gradient(180deg,#0f0f13,#1a1a22);
-    color:#eee;
-    overflow-x:hidden;
+background:linear-gradient(180deg,#0d0f14,#1b1f2a);
+color:#eee;
+overflow-x:hidden;
 }
 header{
-    display:flex;
-    justify-content:space-around;
-    background:#111;
-    padding:15px;
-    border-bottom:2px solid #333;
+display:flex;
+justify-content:space-around;
+background:#11151d;
+padding:14px;
+border-bottom:2px solid #2a2f3d;
 }
 header button{
-    background:none;
-    border:none;
-    color:#aaa;
-    font-size:15px;
-    cursor:pointer;
+background:none;border:none;color:#aaa;font-size:14px;cursor:pointer
 }
-header button.active{
-    color:#f1c40f;
-    font-weight:bold;
-}
-.section{display:none;padding:20px;max-width:900px;margin:auto}
+header button.active{color:#f1c40f;font-weight:bold}
+.section{display:none;padding:20px;max-width:1000px;margin:auto}
 .section.active{display:block}
 
 .card{
-    background:#1c1c25;
-    padding:20px;
-    border-radius:12px;
-    margin-bottom:20px;
-    border:1px solid #2e2e3a;
-    box-shadow:0 0 20px rgba(0,0,0,.4);
+background:#1a1f29;
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+border:1px solid #2c3446;
+box-shadow:0 0 25px rgba(0,0,0,.5)
 }
 
 .center{text-align:center}
 
 button.main{
-    background:linear-gradient(45deg,#8e44ad,#c0392b);
-    border:none;
-    padding:15px 30px;
-    color:#fff;
-    font-size:18px;
-    border-radius:8px;
-    cursor:pointer;
-    margin-top:15px;
-    transition:.2s;
+background:linear-gradient(45deg,#9b59b6,#e74c3c);
+border:none;padding:14px 30px;
+color:#fff;font-size:16px;
+border-radius:8px;cursor:pointer;
+margin-top:15px;
+transition:.2s
 }
 button.main:hover{transform:scale(1.05)}
 
-.progress{
-    height:20px;
-    background:#333;
-    border-radius:10px;
-    margin-top:10px;
-    overflow:hidden;
-}
-.progress-inner{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,#3498db,#9b59b6);
-}
+.progress{height:18px;background:#333;border-radius:8px;margin-top:10px;overflow:hidden}
+.progress-inner{height:100%;width:0%;background:linear-gradient(90deg,#3498db,#9b59b6)}
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:10px;
-}
+.boss-bar{height:18px;background:#400;border-radius:8px;overflow:hidden}
+.boss-inner{height:100%;width:100%;background:#e74c3c;transition:.3s}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .slot{
-    background:#222;
-    height:80px;
-    border-radius:8px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    text-align:center;
-    border:2px solid #333;
-    cursor:pointer;
+background:#222;
+height:85px;
+border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+font-size:11px;text-align:center;
+border:2px solid #333;
+cursor:pointer;transition:.2s
 }
+.slot:hover{transform:scale(1.05)}
+
 .rarity-common{border-color:#777}
 .rarity-rare{border-color:#3498db}
 .rarity-epic{border-color:#9b59b6}
-.rarity-legendary{border-color:#f1c40f;box-shadow:0 0 15px #f1c40f}
+.rarity-legendary{
+border-color:#f1c40f;
+box-shadow:0 0 15px #f1c40f;
+animation:glow 1.5s infinite alternate
+}
+@keyframes glow{
+from{box-shadow:0 0 10px #f1c40f}
+to{box-shadow:0 0 25px #f39c12}
+}
 
 .chest{
-    padding:15px;
-    background:#2a2a33;
-    margin-bottom:15px;
-    border-radius:8px;
-    cursor:pointer;
-    transition:.2s;
+padding:15px;background:#252b38;
+margin-bottom:15px;border-radius:10px;
+cursor:pointer;transition:.2s;text-align:center
 }
-.chest:hover{transform:scale(1.02)}
+.chest:hover{transform:scale(1.05)}
 
-.boss-bar{
-    height:20px;
-    background:#400;
-    margin-top:10px;
-    border-radius:8px;
-    overflow:hidden;
+.reveal{
+margin-top:15px;
+font-size:16px;
+animation:pop .4s ease;
 }
-.boss-inner{
-    height:100%;
-    width:100%;
-    background:#e74c3c;
-}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+svg{margin-top:15px}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -130,7 +108,17 @@ button.main:hover{transform:scale(1.05)}
 <!-- ABISMO -->
 <div id="abismo" class="section active">
 <div class="card center">
+
 <h2>⚔ Guerreiro Nórdico</h2>
+
+<svg id="warrior" width="160" height="200" viewBox="0 0 200 250">
+<rect x="80" y="70" width="40" height="70" fill="#555" id="armor"/>
+<circle cx="100" cy="50" r="25" fill="#c49b6e"/>
+<rect x="65" y="70" width="20" height="70" fill="#555"/>
+<rect x="115" y="70" width="20" height="70" fill="#555"/>
+<rect x="135" y="80" width="15" height="60" fill="#aaa" id="weapon"/>
+</svg>
+
 <p>Profundidade: <span id="depth">1</span></p>
 <p>Poder Total: <span id="power">1</span></p>
 <p>Ouro Rúnico: <span id="gold">0</span></p>
@@ -140,13 +128,13 @@ button.main:hover{transform:scale(1.05)}
 </div>
 
 <div class="card">
-<h3>⚔ Boss Atual</h3>
-<p id="bossName">---</p>
+<h3>⚔ Boss</h3>
+<p id="bossName"></p>
 <div class="boss-bar"><div id="bossHp" class="boss-inner"></div></div>
 </div>
 </div>
 
-<!-- EQUIPAMENTOS -->
+<!-- EQUIP -->
 <div id="equip" class="section">
 <div class="card">
 <h2>🛡 Equipamentos</h2>
@@ -154,7 +142,7 @@ button.main:hover{transform:scale(1.05)}
 </div>
 </div>
 
-<!-- INVENTÁRIO -->
+<!-- INVENT -->
 <div id="inv" class="section">
 <div class="card">
 <h2>🎒 Inventário</h2>
@@ -162,38 +150,32 @@ button.main:hover{transform:scale(1.05)}
 </div>
 </div>
 
-<!-- BAÚS -->
+<!-- BAÚ -->
 <div id="bau" class="section">
 <div class="card">
-<h2>🗝 Baús Antigos</h2>
-<div class="chest" onclick="openChest('common')">Baú de Madeira</div>
-<div class="chest" onclick="openChest('rare')">Baú Rúnico</div>
-<div class="chest" onclick="openChest('epic')">Baú de Odin</div>
-<div class="chest" onclick="openChest('legendary')">Baú de Valhalla</div>
+<h2>🗝 Baús</h2>
+<div class="chest" onclick="openChest()">Abrir Baú Rúnico (100 ouro)</div>
+<div id="revealArea"></div>
 </div>
 </div>
 
-<!-- ASCENSÃO -->
+<!-- ASC -->
 <div id="asc" class="section">
 <div class="card center">
 <h2>👑 Ascensão</h2>
-<p>Multiplicador Permanente: x<span id="prestigeMulti">1</span></p>
-<button class="main" onclick="ascend()">ASCENDER</button>
+<p>Multiplicador: x<span id="prestige">1</span></p>
+<button class="main" onclick="ascend()">ASCENDER (Nv 50)</button>
 </div>
 </div>
 
 <script>
 let state={
-depth:1,
-xp:0,
-power:1,
-gold:0,
-bossHp:100,
-bossMax:100,
+depth:1,power:1,gold:0,
+bossHp:100,bossMax:100,
 prestige:1,
 inventory:[],
-equip:{capacete:null,armadura:null,arma:null,escudo:null,amuleto:null,asa:null}
-};
+equip:{arma:null,armadura:null}
+}
 
 function showTab(id){
 document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"))
@@ -207,36 +189,46 @@ let dmg=state.power*state.prestige
 state.bossHp-=dmg
 if(state.bossHp<=0){
 state.depth++
-state.gold+=Math.floor(10*state.prestige)
-state.bossMax=Math.floor(100*Math.pow(1.2,state.depth))
+state.gold+=20
+state.bossMax=Math.floor(100*Math.pow(1.25,state.depth))
 state.bossHp=state.bossMax
 }
 update()
 save()
 }
 
-function update(){
-document.getElementById("depth").innerText=state.depth
-document.getElementById("power").innerText=Math.floor(state.power*state.prestige)
-document.getElementById("gold").innerText=state.gold
-document.getElementById("bossName").innerText="Guardião do Abismo Nv."+state.depth
-document.getElementById("bossHp").style.width=(state.bossHp/state.bossMax*100)+"%"
-document.getElementById("xpBar").style.width=(state.depth%100)+"%"
-document.getElementById("prestigeMulti").innerText=state.prestige.toFixed(1)
-renderInventory()
-renderEquip()
+setInterval(()=>{
+let idle=state.power*state.prestige*0.2
+state.bossHp-=idle
+if(state.bossHp<=0){
+state.depth++
+state.gold+=15
+state.bossMax=Math.floor(100*Math.pow(1.25,state.depth))
+state.bossHp=state.bossMax
 }
+update()
+},1000)
 
-function openChest(type){
+function openChest(){
+if(state.gold<100)return
+state.gold-=100
 let rarityRoll=Math.random()
 let rarity="common"
-if(type=="legendary"||rarityRoll>0.95)rarity="legendary"
-else if(type=="epic"||rarityRoll>0.85)rarity="epic"
-else if(type=="rare"||rarityRoll>0.7)rarity="rare"
+if(rarityRoll>0.95)rarity="legendary"
+else if(rarityRoll>0.8)rarity="epic"
+else if(rarityRoll>0.6)rarity="rare"
 
-let powerBonus=Math.floor(Math.random()*10+5)*({common:1,rare:2,epic:4,legendary:8}[rarity])
-let item={name:"Relíquia "+rarity,power:powerBonus,rarity:rarity}
+let power=Math.floor(Math.random()*15+5)*({common:1,rare:2,epic:4,legendary:8}[rarity])
+let type=Math.random()>0.5?"arma":"armadura"
+
+let item={type,rarity,power}
 state.inventory.push(item)
+
+document.getElementById("revealArea").innerHTML=
+`<div class="reveal rarity-${rarity}">
+${type.toUpperCase()} +${power} (${rarity})
+</div>`
+
 update()
 save()
 }
@@ -248,9 +240,9 @@ for(let i=0;i<16;i++){
 let div=document.createElement("div")
 div.className="slot"
 if(state.inventory[i]){
-let item=state.inventory[i]
-div.classList.add("rarity-"+item.rarity)
-div.innerHTML=item.name+"<br>+"+item.power
+let it=state.inventory[i]
+div.classList.add("rarity-"+it.rarity)
+div.innerHTML=it.type+"<br>+"+it.power
 div.onclick=()=>equipItem(i)
 }
 inv.appendChild(div)
@@ -258,10 +250,25 @@ inv.appendChild(div)
 }
 
 function equipItem(i){
-let item=state.inventory[i]
-if(!item)return
-state.power+=item.power
+let it=state.inventory[i]
+if(!it)return
+if(state.equip[it.type])state.power-=state.equip[it.type].power
+state.equip[it.type]=it
+state.power+=it.power
 state.inventory.splice(i,1)
+
+if(it.type=="arma")
+document.getElementById("weapon").setAttribute("fill",
+it.rarity=="legendary"?"#f1c40f":
+it.rarity=="epic"?"#9b59b6":
+it.rarity=="rare"?"#3498db":"#aaa")
+
+if(it.type=="armadura")
+document.getElementById("armor").setAttribute("fill",
+it.rarity=="legendary"?"#f1c40f":
+it.rarity=="epic"?"#9b59b6":
+it.rarity=="rare"?"#3498db":"#555")
+
 update()
 save()
 }
@@ -272,7 +279,7 @@ eq.innerHTML=""
 Object.keys(state.equip).forEach(k=>{
 let div=document.createElement("div")
 div.className="slot"
-div.innerText=k.toUpperCase()
+div.innerText=k.toUpperCase()+(state.equip[k]?"\n+"+state.equip[k].power:"")
 eq.appendChild(div)
 })
 }
@@ -285,13 +292,28 @@ state.power=1
 state.gold=0
 state.bossMax=100
 state.bossHp=100
+state.inventory=[]
+state.equip={arma:null,armadura:null}
+document.getElementById("weapon").setAttribute("fill","#aaa")
+document.getElementById("armor").setAttribute("fill","#555")
 update()
 save()
 }
 
-function save(){localStorage.setItem("valhallaSave",JSON.stringify(state))}
+function update(){
+document.getElementById("depth").innerText=state.depth
+document.getElementById("power").innerText=Math.floor(state.power*state.prestige)
+document.getElementById("gold").innerText=state.gold
+document.getElementById("bossName").innerText="Guardião Nv."+state.depth
+document.getElementById("bossHp").style.width=(state.bossHp/state.bossMax*100)+"%"
+document.getElementById("prestige").innerText=state.prestige.toFixed(1)
+renderInventory()
+renderEquip()
+}
+
+function save(){localStorage.setItem("valhallaFull",JSON.stringify(state))}
 function load(){
-let s=localStorage.getItem("valhallaSave")
+let s=localStorage.getItem("valhallaFull")
 if(s)state=JSON.parse(s)
 update()
 }
