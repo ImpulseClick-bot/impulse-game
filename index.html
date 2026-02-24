@@ -1,554 +1,302 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ABYSSARA — Ascensão Infinita</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eternal Valhalla: Abyss Walker</title>
+
 <style>
-:root{
-  --bg-1: #120919;
-  --bg-2: #201233;
-  --accent: #ff9f43;
-  --accent-2: #6c5ce7;
-  --muted: #bfb8ca;
-  --glass: rgba(255,255,255,0.04);
-  --panel: rgba(0,0,0,0.35);
-  --green: #22c55e;
-  --danger: #ff6b6b;
-  --gold: #ffd27a;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, sans-serif}
 body{
-  background: radial-gradient(1000px 600px at 20% 10%, rgba(108,92,231,0.08), transparent),
-              linear-gradient(180deg,var(--bg-1),var(--bg-2));
-  color:#fff;
-  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow:hidden;
+    background:linear-gradient(180deg,#0f0f13,#1a1a22);
+    color:#eee;
+    overflow-x:hidden;
+}
+header{
+    display:flex;
+    justify-content:space-around;
+    background:#111;
+    padding:15px;
+    border-bottom:2px solid #333;
+}
+header button{
+    background:none;
+    border:none;
+    color:#aaa;
+    font-size:15px;
+    cursor:pointer;
+}
+header button.active{
+    color:#f1c40f;
+    font-weight:bold;
+}
+.section{display:none;padding:20px;max-width:900px;margin:auto}
+.section.active{display:block}
+
+.card{
+    background:#1c1c25;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+    border:1px solid #2e2e3a;
+    box-shadow:0 0 20px rgba(0,0,0,.4);
 }
 
-/* APP LAYOUT */
-#app{display:flex;flex-direction:column;height:100vh;padding:12px;gap:10px}
-.top-row{display:flex;gap:10px;align-items:center}
-.hud{
-  display:flex;gap:10px;flex:1;align-items:center;
+.center{text-align:center}
+
+button.main{
+    background:linear-gradient(45deg,#8e44ad,#c0392b);
+    border:none;
+    padding:15px 30px;
+    color:#fff;
+    font-size:18px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:15px;
+    transition:.2s;
 }
-.hud .tile{
-  background:var(--panel);padding:10px;border-radius:12px;min-width:84px;text-align:center;
-  box-shadow:0 6px 18px rgba(0,0,0,0.45), inset 0 1px rgba(255,255,255,0.02);
-}
-.hud .tile .label{font-size:11px;color:var(--muted)}
-.hud .tile .value{font-weight:700;color:var(--gold);font-size:18px;margin-top:6px}
-.hud .combo{color:var(--accent-2);font-weight:700}
+button.main:hover{transform:scale(1.05)}
 
-.title{font-family:Orbitron, Inter; font-size:18px; text-align:center; flex:0 0 280px}
-
-/* MAIN VIEW */
-.main{
-  display:flex;gap:14px;flex:1;align-items:stretch;
+.progress{
+    height:20px;
+    background:#333;
+    border-radius:10px;
+    margin-top:10px;
+    overflow:hidden;
 }
-.left-col{flex:0 0 88%;position:relative;display:flex;flex-direction:column;align-items:center}
-.right-col{flex:0 0 30%;display:flex;flex-direction:column;gap:10px}
-.panel{
-  width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.15));
-  border-radius:16px;padding:14px;backdrop-filter:blur(6px);box-shadow:0 12px 30px rgba(0,0,0,0.6);
+.progress-inner{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#3498db,#9b59b6);
 }
 
-/* CENTER STAGE */
-.stage{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:6px;min-height:420px}
-.core-wrap{position:relative;display:flex;flex-direction:column;align-items:center}
-.core{
-  width:170px;height:170px;border-radius:50%;
-  background: radial-gradient(circle at 30% 25%, #9b7bff 0%, #643fd3 35%, #28123b 65%);
-  box-shadow:0 12px 40px rgba(108,92,231,0.25), 0 0 80px rgba(108,92,231,0.09);
-  display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;
-  transition:transform .08s ease;
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
 }
-.core:active{transform:scale(0.98)}
-.core .eye{width:18px;height:18px;border-radius:50%;background:linear-gradient(90deg,#00f5ff,#6ff1ff);box-shadow:0 0 12px rgba(0,245,255,0.6);position:absolute}
-.core .eye.left{left:34px;top:56px}
-.core .eye.right{right:34px;top:56px}
-.depth-big{font-size:26px;font-weight:800;color:var(--accent);margin-top:6px;text-shadow:0 2px 12px rgba(0,0,0,0.6)}
-.progress-bar{width:88%;height:18px;background:rgba(255,255,255,0.04);border-radius:12px;overflow:hidden}
-.progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--danger));transition:width .4s cubic-bezier(.2,.9,.2,1)}
-.subrow{display:flex;gap:12px;width:100%;align-items:center;justify-content:center}
+.slot{
+    background:#222;
+    height:80px;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    text-align:center;
+    border:2px solid #333;
+    cursor:pointer;
+}
+.rarity-common{border-color:#777}
+.rarity-rare{border-color:#3498db}
+.rarity-epic{border-color:#9b59b6}
+.rarity-legendary{border-color:#f1c40f;box-shadow:0 0 15px #f1c40f}
 
-/* BOTTOM CONTROLS */
-.controls{display:flex;gap:12px;align-items:center;width:100%}
-.btn-primary{flex:1;background:linear-gradient(90deg,var(--accent),#ff6b6b);padding:14px;border-radius:12px;border:none;font-weight:800;color:#1b1220;font-size:16px;cursor:pointer;box-shadow:0 10px 30px rgba(255,159,67,0.12)}
-.small-btn{padding:10px 12px;border-radius:10px;background:var(--panel);border:none;color:var(--muted);cursor:pointer}
+.chest{
+    padding:15px;
+    background:#2a2a33;
+    margin-bottom:15px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.2s;
+}
+.chest:hover{transform:scale(1.02)}
 
-/* RIGHT COLUMN content */
-.card h3{margin-bottom:8px}
-.chest{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));border-radius:10px}
-.chest .left{display:flex;gap:10px;align-items:center}
-.badge{width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,#ffd27a,#ff9f43);display:flex;align-items:center;justify-content:center;color:#2b1326;font-weight:800}
-.mission-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto;padding-right:6px}
-.mission{display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px}
-.mission .meta{font-size:12px;color:var(--muted)}
-.mission .claim{background:var(--green);color:#06120a;padding:6px 8px;border-radius:8px;font-weight:700;border:none;cursor:pointer}
-
-/* BOSS cinematic */
-.boss-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.boss-figure{width:360px;height:360px;border-radius:14px;background:linear-gradient(180deg,#2b0000,#100000);opacity:0;transform:translateY(30px);transition:all .45s;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
-.boss-figure.active{opacity:1;transform:translateY(0);pointer-events:auto}
-.boss-hud{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:72%;background:rgba(0,0,0,0.45);padding:8px;border-radius:10px}
-.boss-hud .bar{height:10px;background:#2b0000;border-radius:12px;overflow:hidden}
-.boss-hud .bar .fill{height:100%;background:linear-gradient(90deg,#ff6b6b,#ff0000);width:60%}
-
-/* TOAST / NOTIF */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:linear-gradient(90deg,#2b1326,#44244a);padding:10px 14px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.6);display:none}
-
-/* NAV bottom */
-.bottom-nav{display:flex;gap:8px;jusify-content:space-between;align-items:center}
-.nav-btn{flex:1;background:var(--panel);padding:10px;border-radius:10px;text-align:center;color:var(--muted);cursor:pointer}
-
-/* Responsive */
-@media (max-width:900px){
-  .main{flex-direction:column}
-  .right-col{width:100%}
-  .left-col{width:100%}
+.boss-bar{
+    height:20px;
+    background:#400;
+    margin-top:10px;
+    border-radius:8px;
+    overflow:hidden;
+}
+.boss-inner{
+    height:100%;
+    width:100%;
+    background:#e74c3c;
 }
 </style>
 </head>
+
 <body>
-<div id="app">
-  <div class="top-row">
-    <div class="hud">
-      <div class="tile"><div class="label">Energia</div><div class="value" id="ui-energy">100</div></div>
-      <div class="tile"><div class="label">Núcleo</div><div class="value" id="ui-core">0</div></div>
-      <div class="tile"><div class="label">Profundidade</div><div class="value" id="ui-depth">0m</div></div>
-      <div class="tile"><div class="label">Combo</div><div class="value combo" id="ui-combo">x1</div></div>
-    </div>
-    <div class="title">ABYSSARA — Ascensão Infinita</div>
-  </div>
 
-  <div class="main">
-    <div class="left-col panel">
-      <div class="stage">
-        <div class="core-wrap">
-          <div class="core" id="core" title="Clique para rasgar">
-            <div class="eye left"></div>
-            <div class="eye right"></div>
-          </div>
-          <div class="depth-big" id="depth-big">0 m</div>
-          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-        </div>
+<header>
+<button onclick="showTab('abismo')" class="active">Abismo</button>
+<button onclick="showTab('equip')">Equipamentos</button>
+<button onclick="showTab('inv')">Inventário</button>
+<button onclick="showTab('bau')">Baús</button>
+<button onclick="showTab('asc')">Ascensão</button>
+</header>
 
-        <div class="subrow">
-          <div style="flex:1;display:flex;gap:6px">
-            <button class="btn-primary" id="btn-dig">Rasgar Dimensão</button>
-            <button class="small-btn" id="btn-chest">Abrir Baú</button>
-          </div>
-        </div>
+<!-- ABISMO -->
+<div id="abismo" class="section active">
+<div class="card center">
+<h2>⚔ Guerreiro Nórdico</h2>
+<p>Profundidade: <span id="depth">1</span></p>
+<p>Poder Total: <span id="power">1</span></p>
+<p>Ouro Rúnico: <span id="gold">0</span></p>
 
-        <div class="boss-screen" id="boss-screen" aria-hidden="true">
-          <div class="boss-figure" id="boss-figure">
-            <div class="boss-hud">
-              <div style="display:flex;justify-content:space-between;font-size:12px"><span id="boss-name">Guardião</span><span id="boss-life">100%</span></div>
-              <div class="bar" style="margin-top:6px"><div class="fill" id="boss-life-fill" style="width:100%"></div></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="right-col">
-      <div class="panel card">
-        <h3>Baús</h3>
-        <div class="chest">
-          <div class="left">
-            <div class="badge">C</div>
-            <div>
-              <div style="font-weight:700">Baú Comum</div>
-              <div style="font-size:12px;color:var(--muted)">200 Núcleo</div>
-            </div>
-          </div>
-          <div><button class="small-btn" id="buy-chest">Abrir</button></div>
-        </div>
-        <div style="height:8px"></div>
-        <div class="chest">
-          <div class="left">
-            <div class="badge" style="background:linear-gradient(90deg,#8bdcff,#6c5ce7)">R</div>
-            <div>
-              <div style="font-weight:700">Baú Raro</div>
-              <div style="font-size:12px;color:var(--muted)">500 Núcleo</div>
-            </div>
-          </div>
-          <div><button class="small-btn" id="buy-rare">Abrir</button></div>
-        </div>
-      </div>
-
-      <div class="panel card">
-        <h3>Missões</h3>
-        <div style="height:10px"></div>
-        <div class="mission-list" id="missions">
-          <!-- missions injected -->
-        </div>
-      </div>
-
-      <div class="panel card">
-        <h3>Upgrades</h3>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-weight:700">Poder</div>
-              <div style="font-size:12px;color:var(--muted)">Aumenta dano por rasgo</div>
-            </div>
-            <div><button class="small-btn" id="buy-power">Comprar</button></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-weight:700">Energia Max</div>
-              <div style="font-size:12px;color:var(--muted)">Aumenta energia total</div>
-            </div>
-            <div><button class="small-btn" id="buy-energy">Comprar</button></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
-    <div class="bottom-left">
-      <div style="font-size:12px;color:var(--muted)">Prestige: <span id="ui-prestige">0</span></div>
-    </div>
-    <div class="bottom-nav" style="width:48%">
-      <div class="nav-btn" id="nav-home">Home</div>
-      <div class="nav-btn" id="nav-inv">Inventário</div>
-      <div class="nav-btn" id="nav-rank">Liga</div>
-    </div>
-  </div>
+<div class="progress"><div id="xpBar" class="progress-inner"></div></div>
+<button class="main" onclick="attack()">AVANÇAR</button>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="card">
+<h3>⚔ Boss Atual</h3>
+<p id="bossName">---</p>
+<div class="boss-bar"><div id="bossHp" class="boss-inner"></div></div>
+</div>
+</div>
+
+<!-- EQUIPAMENTOS -->
+<div id="equip" class="section">
+<div class="card">
+<h2>🛡 Equipamentos</h2>
+<div class="grid" id="equipSlots"></div>
+</div>
+</div>
+
+<!-- INVENTÁRIO -->
+<div id="inv" class="section">
+<div class="card">
+<h2>🎒 Inventário</h2>
+<div class="grid" id="inventory"></div>
+</div>
+</div>
+
+<!-- BAÚS -->
+<div id="bau" class="section">
+<div class="card">
+<h2>🗝 Baús Antigos</h2>
+<div class="chest" onclick="openChest('common')">Baú de Madeira</div>
+<div class="chest" onclick="openChest('rare')">Baú Rúnico</div>
+<div class="chest" onclick="openChest('epic')">Baú de Odin</div>
+<div class="chest" onclick="openChest('legendary')">Baú de Valhalla</div>
+</div>
+</div>
+
+<!-- ASCENSÃO -->
+<div id="asc" class="section">
+<div class="card center">
+<h2>👑 Ascensão</h2>
+<p>Multiplicador Permanente: x<span id="prestigeMulti">1</span></p>
+<button class="main" onclick="ascend()">ASCENDER</button>
+</div>
+</div>
 
 <script>
-/* ========= CORE STATE ========= */
-const STATE_KEY = "abyssara_v_final";
-let state = {
-  energy: 100,
-  maxEnergy: 100,
-  core: 0,
-  depth: 0,
-  power: 1,
-  prestige: 0,
-  artifacts: [],
-  lastTs: Date.now(),
-  missions: [],
-  bossesKilled: 0
+let state={
+depth:1,
+xp:0,
+power:1,
+gold:0,
+bossHp:100,
+bossMax:100,
+prestige:1,
+inventory:[],
+equip:{capacete:null,armadura:null,arma:null,escudo:null,amuleto:null,asa:null}
 };
 
-/* ======== UTIL ======== */
-function saveState(){ state.lastTs = Date.now(); localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
-function loadState(){ const j = localStorage.getItem(STATE_KEY); if(j){ Object.assign(state, JSON.parse(j)); } }
-function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-function toast(msg, time=2200){ const t=document.getElementById('toast'); t.innerText=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',time); }
-
-/* ======== UI REFS ======== */
-const ui = {
-  energy: document.getElementById('ui-energy'),
-  core: document.getElementById('ui-core'),
-  depth: document.getElementById('ui-depth'),
-  combo: document.getElementById('ui-combo'),
-  depthBig: document.getElementById('depth-big'),
-  progress: document.getElementById('progress-fill'),
-  bossScreen: document.getElementById('boss-screen'),
-  bossFigure: document.getElementById('boss-figure'),
-  bossLifeFill: document.getElementById('boss-life-fill'),
-  bossName: document.getElementById('boss-name'),
-  bossLifeText: document.getElementById('boss-life'),
-  missionsList: document.getElementById('missions'),
-  toast: document.getElementById('toast'),
-  prestige: document.getElementById('ui-prestige')
-};
-
-/* ======== INITIALIZE / OFFLINE GAIN ======== */
-loadState();
-(function offlineLogic(){
-  const now = Date.now();
-  const diffSec = Math.floor((now - (state.lastTs || now))/1000);
-  if(diffSec > 10){
-    // compute passive gain
-    const perSec = (state.power * 0.06) * (1 + state.prestige*0.05);
-    const gained = Math.floor(perSec * diffSec * 0.6);
-    if(gained>0){ state.core += gained; toast("Offline: +" + gained + " Núcleo"); }
-  }
-  seedMissionsIfNeeded();
-  saveState();
-})();
-
-/* ======== MISSION SYSTEM (basic dynamic) ======== */
-function seedMissionsIfNeeded(){
-  if(!state.missions || state.missions.length===0){
-    state.missions = [
-      { id:1, text:"Alcance 100m", type:"depth", target:100, progress:0, reward:60, done:false },
-      { id:2, text:"Colete 300 Núcleo", type:"core", target:300, progress:0, reward:120, done:false },
-      { id:3, text:"Derrote 1 Guardião", type:"boss", target:1, progress:0, reward:220, done:false }
-    ];
-  }
-  renderMissions();
+function showTab(id){
+document.querySelectorAll("header button").forEach(b=>b.classList.remove("active"))
+event.target.classList.add("active")
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
+document.getElementById(id).classList.add("active")
 }
 
-/* ======== RENDER ======== */
-function renderAll(){
-  ui.energy.innerText = Math.floor(state.energy);
-  ui.core.innerText = Math.floor(state.core);
-  ui.depth.innerText = Math.floor(state.depth) + "m";
-  ui.depthBig.innerText = Math.floor(state.depth) + " m";
-  ui.combo.innerText = "x" + getComboMultiplier();
-  ui.progress.style.width = Math.min(100, (state.depth % 100)) + "%";
-  ui.prestige.innerText = state.prestige;
-  saveState();
-  renderMissions();
+function attack(){
+let dmg=state.power*state.prestige
+state.bossHp-=dmg
+if(state.bossHp<=0){
+state.depth++
+state.gold+=Math.floor(10*state.prestige)
+state.bossMax=Math.floor(100*Math.pow(1.2,state.depth))
+state.bossHp=state.bossMax
 }
-function renderMissions(){
-  ui.missionsList.innerHTML = "";
-  state.missions.forEach(m=>{
-    const el = document.createElement('div');
-    el.className = 'mission';
-    el.innerHTML = `<div><div style="font-weight:700">${m.text}</div><div class="meta">${m.done ? "Concluído" : "Progresso: " + (m.type==="depth"? Math.min(state.depth,m.target) : m.type==="core"? Math.min(state.core,m.target) : m.progress) + "/" + m.target}</div></div>
-                    <div>${m.done ? "<button class='small-btn' disabled>OK</button>" : "<button class='claim' onclick='claimMission("+m.id+")'>Reivindicar</button>"}</div>`;
-    ui.missionsList.appendChild(el);
-  });
+update()
+save()
 }
 
-/* ======== GAME LOGIC ======== */
-let comboTimer = 0;
-let comboCount = 0;
-let boss = null;
-
-function getComboMultiplier(){
-  return 1 + Math.floor(comboCount / 6); // x1, x2, x3...
-}
-function digAction(){
-  if(state.energy <= 0){ toast("Sem energia"); return; }
-  // energy cost & combo
-  state.energy = clamp(state.energy - 1, 0, state.maxEnergy);
-  comboCount++;
-  comboTimer = Date.now();
-  const comboMult = getComboMultiplier();
-  // critical small chance
-  const crit = Math.random() < 0.14;
-  const critMult = crit ? 2.2 : 1;
-  const base = state.power;
-  const gain = Math.floor(base * comboMult * critMult * (1 + state.prestige*0.02));
-  if(boss){
-    boss.life -= gain;
-    if(boss.life <= 0){
-      defeatBoss();
-    } else {
-      ui.bossLifeFill.style.width = Math.max(0, (boss.life / boss.max) * 100) + "%";
-      ui.bossLifeText.innerText = Math.ceil((boss.life / boss.max) * 100) + "%";
-    }
-  } else {
-    state.depth += gain;
-    state.core += Math.floor(gain * 0.45);
-    checkBossSpawn();
-  }
-  // animate crit
-  if(crit) showCrit(gain);
-  renderAll();
+function update(){
+document.getElementById("depth").innerText=state.depth
+document.getElementById("power").innerText=Math.floor(state.power*state.prestige)
+document.getElementById("gold").innerText=state.gold
+document.getElementById("bossName").innerText="Guardião do Abismo Nv."+state.depth
+document.getElementById("bossHp").style.width=(state.bossHp/state.bossMax*100)+"%"
+document.getElementById("xpBar").style.width=(state.depth%100)+"%"
+document.getElementById("prestigeMulti").innerText=state.prestige.toFixed(1)
+renderInventory()
+renderEquip()
 }
 
-/* Boss spawn logic */
-function checkBossSpawn(){
-  // spawn boss every ~500 depth milestone
-  if(state.depth > 0 && Math.floor(state.depth) % 500 === 0){
-    spawnBoss();
-  }
-}
-function spawnBoss(){
-  if(boss) return;
-  boss = {
-    name: "Guardião do Abismo",
-    max: Math.floor(200 + state.depth * 0.6),
-    life: Math.floor(200 + state.depth * 0.6),
-    reward: Math.floor(80 + state.depth * 0.3)
-  };
-  ui.bossName.innerText = boss.name;
-  ui.bossLifeFill.style.width = "100%";
-  ui.bossLifeText.innerText = "100%";
-  document.getElementById('boss-figure').classList.add('active');
-  document.getElementById('boss-screen').style.pointerEvents = 'auto';
-  ui.bossScreen.style.display = 'block';
-}
-function defeatBoss(){
-  state.core += boss.reward;
-  state.bossesKilled = (state.bossesKilled || 0) + 1;
-  toast("Guardião derrotado! +"+boss.reward+" Núcleo");
-  boss = null;
-  document.getElementById('boss-figure').classList.remove('active');
-  document.getElementById('boss-screen').style.pointerEvents = 'none';
-  setTimeout(()=>{ ui.bossScreen.style.display = 'none'; }, 600);
-  // progress relevant missions
-  state.missions.forEach(m=>{
-    if(!m.done && m.type==='boss'){
-      m.progress++;
-      if(m.progress >= m.target){
-        m.done = true;
-        state.core += m.reward; // immediate bonus to feel good
-        toast("Missão concluída! +" + m.reward + " Núcleo");
-      }
-    }
-  });
-  renderMissions();
+function openChest(type){
+let rarityRoll=Math.random()
+let rarity="common"
+if(type=="legendary"||rarityRoll>0.95)rarity="legendary"
+else if(type=="epic"||rarityRoll>0.85)rarity="epic"
+else if(type=="rare"||rarityRoll>0.7)rarity="rare"
+
+let powerBonus=Math.floor(Math.random()*10+5)*({common:1,rare:2,epic:4,legendary:8}[rarity])
+let item={name:"Relíquia "+rarity,power:powerBonus,rarity:rarity}
+state.inventory.push(item)
+update()
+save()
 }
 
-/* crit popup */
-function showCrit(val){
-  const el = document.createElement('div');
-  el.className = 'crit';
-  el.innerText = "CRIT +" + val;
-  const center = document.querySelector('.center');
-  el.style.left = (center.clientWidth/2 - 40) + 'px';
-  el.style.top = (center.clientHeight/2 - 10) + 'px';
-  center.appendChild(el);
-  setTimeout(()=>el.remove(),700);
+function renderInventory(){
+let inv=document.getElementById("inventory")
+inv.innerHTML=""
+for(let i=0;i<16;i++){
+let div=document.createElement("div")
+div.className="slot"
+if(state.inventory[i]){
+let item=state.inventory[i]
+div.classList.add("rarity-"+item.rarity)
+div.innerHTML=item.name+"<br>+"+item.power
+div.onclick=()=>equipItem(i)
+}
+inv.appendChild(div)
+}
 }
 
-/* chest/loot */
-function openChest(type='common'){
-  if(type==='common'){
-    if(state.core < 200){ toast("Você precisa 200 Núcleo"); return; }
-    state.core -= 200;
-    const roll=Math.random();
-    if(roll<0.6){ state.core += 150; toast("Baú comum: +150 Núcleo"); }
-    else if(roll<0.9){ addArtifact(0.08); toast("Raro: Artefato +8% ganho permanent"); }
-    else { addArtifact(0.18); toast("Lendário: Artefato +18% ganho!"); }
-  } else {
-    // rare chest
-    if(state.core < 500){ toast("Precisa 500 Núcleo"); return; }
-    state.core -= 500;
-    const roll=Math.random();
-    if(roll<0.55){ state.core += 400; toast("Baú raro: +400 Núcleo"); }
-    else if(roll<0.9){ addArtifact(0.15); toast("Artefato raro +15%"); }
-    else { addArtifact(0.35); toast("Artefato LENDÁRIO +35%!"); }
-  }
-  saveState(); renderAll();
+function equipItem(i){
+let item=state.inventory[i]
+if(!item)return
+state.power+=item.power
+state.inventory.splice(i,1)
+update()
+save()
 }
 
-/* artifacts */
-function addArtifact(value){
-  state.artifacts.push({ value: value, id: Date.now() });
-  // cap artifacts visually
-  if(state.artifacts.length > 6) state.artifacts.shift();
+function renderEquip(){
+let eq=document.getElementById("equipSlots")
+eq.innerHTML=""
+Object.keys(state.equip).forEach(k=>{
+let div=document.createElement("div")
+div.className="slot"
+div.innerText=k.toUpperCase()
+eq.appendChild(div)
+})
 }
 
-/* upgrades */
-function buyPower(){
-  const cost = Math.floor(50 * Math.pow(1.18, state.power-1));
-  if(state.core >= cost){
-    state.core -= cost;
-    state.power += 1;
-    toast("Poder aumentado");
-    renderAll();
-  } else toast("Núcleo insuficiente");
-}
-function buyEnergy(){
-  const cost = Math.floor(100 * Math.pow(1.14, (state.maxEnergy-100)/20));
-  if(state.core >= cost){
-    state.core -= cost;
-    state.maxEnergy += 20;
-    state.energy = state.maxEnergy;
-    toast("Energia máxima aumentada");
-    renderAll();
-  } else toast("Núcleo insuficiente");
+function ascend(){
+if(state.depth<50)return
+state.prestige+=0.5
+state.depth=1
+state.power=1
+state.gold=0
+state.bossMax=100
+state.bossHp=100
+update()
+save()
 }
 
-/* mission claim (some missions auto reward) */
-function claimMission(id){
-  const m = state.missions.find(x=>x.id===id);
-  if(!m || m.done) return;
-  // verify
-  let ok=false;
-  if(m.type==='depth' && state.depth>=m.target) ok=true;
-  if(m.type==='core' && state.core>=m.target) ok=true;
-  if(m.type==='boss' && (state.bossesKilled||0) >= m.target) ok=true;
-  if(ok){
-    state.core += m.reward;
-    m.done = true;
-    toast("Missão reivindicada: +" + m.reward + " Núcleo");
-    renderMissions();
-  } else {
-    toast("Missão não completada ainda");
-  }
+function save(){localStorage.setItem("valhallaSave",JSON.stringify(state))}
+function load(){
+let s=localStorage.getItem("valhallaSave")
+if(s)state=JSON.parse(s)
+update()
 }
-
-/* combo decay */
-setInterval(()=>{
-  if(comboTimer && Date.now() - comboTimer > 2500){
-    comboCount = 0;
-    comboTimer = 0;
-  }
-}, 500);
-
-/* regen and passive idle */
-setInterval(()=>{
-  // regen energy
-  if(state.energy < state.maxEnergy){
-    state.energy = clamp(state.energy + (0.8 + (state.artifacts.reduce((s,a)=>s+a.value,0))*0.4), 0, state.maxEnergy);
-  }
-  // passive core
-  const passive = (state.power * 0.06) * (1 + state.prestige*0.02) * (1 + state.artifacts.reduce((s,a)=>s+a.value,0));
-  state.core += passive;
-  // update UI
-  renderAll();
-}, 1000);
-
-/* UI wiring */
-document.getElementById('btn-dig').addEventListener('click', digAction);
-document.getElementById('core').addEventListener('click', ()=>{ digAction(); });
-document.getElementById('btn-chest').addEventListener('click', ()=>openChest('common'));
-document.getElementById('buy-chest').addEventListener('click', ()=>openChest('common'));
-document.getElementById('buy-rare').addEventListener('click', ()=>openChest('rare'));
-document.getElementById('buy-power').addEventListener('click', buyPower);
-document.getElementById('buy-energy').addEventListener('click', buyEnergy);
-
-/* render missions interactive */
-function renderMissions(){
-  ui.missionsList.innerHTML='';
-  state.missions.forEach(m=>{
-    const row = document.createElement('div');
-    row.className = 'mission';
-    const left = document.createElement('div');
-    left.innerHTML = `<div style="font-weight:700">${m.text}</div><div class="meta">${m.done? 'Concluído' : 'Progresso: ' + (m.type==='depth'? Math.min(state.depth,m.target) : m.type==='core'? Math.min(Math.floor(state.core),m.target): m.progress+'/'+m.target) }</div>`;
-    const right = document.createElement('div');
-    if(m.done){
-      right.innerHTML = `<button class="small-btn" disabled>OK</button>`;
-    } else {
-      right.innerHTML = `<button class="claim" onclick="claimMission(${m.id})">Reivindicar</button>`;
-    }
-    row.appendChild(left);
-    row.appendChild(right);
-    ui.missionsList.appendChild(row);
-  });
-}
-
-/* prestige quick action: renascer */
-function prestigeReset(){
-  // require deep progress
-  if(state.depth < 3000 && state.core < 20000){ toast("Requer profundidade 3000m ou 20k Núcleo"); return; }
-  const gained = Math.floor(Math.sqrt(state.depth / 300));
-  if(gained <= 0){ toast("Ainda não ganho prestige"); return; }
-  state.prestige += gained;
-  // reset core progression, keep artifacts
-  state.depth = 0;
-  state.core = 0;
-  state.power = 1;
-  toast("Renascido! +" + gained + " Fragmentos Cósmicos");
-  renderAll();
-}
-
-/* seed and render initial */
-seedMissionsIfNeeded();
-renderAll();
-
+load()
 </script>
+
 </body>
-  </html>
+</html>
